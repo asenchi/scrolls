@@ -10,7 +10,7 @@ module Scrolls
   end
 
   def log_exception(data, e)
-    Log.log_exception(data, &blk)
+    Log.log_exception(data, e)
   end
 
   module Log
@@ -81,7 +81,8 @@ module Scrolls
         :message      => e.message,
         :exception_id => e.object_id.abs
       ))
-      e.backtrace.reverse.each do |line|
+      bt = e.backtrace.reverse
+      bt[0, bt.size-6].each do |line|
         log(data.merge(
           :exception    => true,
           :exception_id => e.object_id.abs,
