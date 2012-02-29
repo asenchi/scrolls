@@ -16,9 +16,14 @@ module Scrolls
   module Log
     extend self
 
-    def start
-      $stdout.sync = $stderr.sync = true
+    def start(stream = nil)
+      @stream = stream
+      @stream.sync = true
       log(:log => true, :start => true)
+    end
+
+    def stream
+      @stream ||= STDOUT
     end
 
     def mtx
@@ -28,7 +33,7 @@ module Scrolls
     def write(data)
       msg = unparse(data)
       mtx.synchronize do
-        $stdout.puts(msg)
+        stream.puts(msg)
       end
     end
 
