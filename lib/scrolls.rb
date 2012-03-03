@@ -16,14 +16,12 @@ module Scrolls
   module Log
     extend self
 
-    def start(stream = nil)
+    attr_accessor :stream
+
+    def start(stream = STDOUT)
       @stream = stream
       @stream.sync = true
       log(:log => true, :start => true)
-    end
-
-    def stream
-      @stream ||= STDOUT
     end
 
     def mtx
