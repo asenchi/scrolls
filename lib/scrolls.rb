@@ -36,15 +36,17 @@ module Scrolls
       data.map do |(k, v)|
         if (v == true)
           k.to_s
-        elsif (v == false)
-          "#{k}=false"
-        elsif v.is_a?(String) # escape and quote v with ' or \ or multiple words
-          v = v.gsub(/\\|'/) { |c| "\\#{c}" }
-          "#{k}='#{v}'"
         elsif v.is_a?(Float)
           "#{k}=#{format("%.3f", v)}"
+        elsif v.nil?
+          nil
         else
-          "#{k}=#{v}"
+          v_str = v.to_s
+          if (v_str =~ /^[a-zA-Z0-9\:\.\-\_\/\@]+$/)
+            "#{k}=#{v_str}"
+          else
+            "#{k}=\"#{v_str.sub(/".*/, "...")}\""
+          end
         end
       end.compact.join(" ")
     end
