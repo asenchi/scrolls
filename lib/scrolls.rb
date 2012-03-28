@@ -18,10 +18,18 @@ module Scrolls
 
     attr_accessor :stream
 
-    def start(stream = STDOUT)
-      @stream = stream
-      @stream.sync = true
+    def start(out = nil)
+      # This allows log_exceptions below to pick up the defined output,
+      # otherwise stream out to STDERR
+      @defined = out.nil? ? false : true
+      sync_stream(out)
       log(:log => true, :start => true)
+    end
+
+    def sync_stream(out = nil)
+      out = STDOUT if out.nil?
+      @stream = out
+      @stream.sync = true
     end
 
     def mtx
@@ -31,7 +39,7 @@ module Scrolls
     def write(data)
       msg = unparse(data)
       mtx.synchronize do
-        stream.puts(msg)
+        @stream.puts(msg)
       end
     end
 
@@ -80,19 +88,22 @@ module Scrolls
     end
 
     def log_exception(data, e)
+      sync_stream(STDERR) unless @defined
       log(data.merge(
         :exception    => true,
         :class        => e.class,
         :message      => e.message,
         :exception_id => e.object_id.abs
       ))
-      bt = e.backtrace.reverse
-      bt[0, bt.size-6].each do |line|
-        log(data.merge(
-          :exception    => true,
-          :exception_id => e.object_id.abs,
-          :site         => line.gsub(/[`'"]/, "")
-        ))
+      if e.backtrace
+        bt = e.backtrace.reverse
+        bt[0, bt.size-6].each do |line|
+          log(data.merge(
+            :exception    => true,
+            :exception_id => e.object_id.abs,
+            :site         => line.gsub(/[`'"]/, "")
+          ))
+        end
       end
     end
   end
