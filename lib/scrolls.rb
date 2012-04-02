@@ -53,7 +53,7 @@ module Scrolls
           nil
         else
           v_str = v.to_s
-          if (v_str =~ /^[a-zA-Z0-9\:\.\-\_\/\@]+$/)
+          if (v_str =~ /^[a-zA-z0-9\-\_\.]+$/)
             "#{k}=#{v_str}"
           else
             "#{k}=\"#{v_str.sub(/".*/, "...")}\""
