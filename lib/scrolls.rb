@@ -23,7 +23,6 @@ module Scrolls
       # otherwise stream out to STDERR
       @defined = out.nil? ? false : true
       sync_stream(out)
-      log(:log => true, :start => true)
     end
 
     def sync_stream(out = nil)
