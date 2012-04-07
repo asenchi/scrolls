@@ -16,6 +16,14 @@ module Scrolls
   module Log
     extend self
 
+    LOG_LEVEL = (ENV["LOG_LEVEL"] || 3).to_i
+    LOG_LEVEL_MAP = {
+      "fatal" => 0,
+      "error" => 1,
+      "warn"  => 2,
+      "info"  => 3
+    }
+
     attr_accessor :stream
 
     def start(out = nil)
@@ -36,9 +44,11 @@ module Scrolls
     end
 
     def write(data)
-      msg = unparse(data)
-      mtx.synchronize do
-        @stream.puts(msg)
+      if log_level_ok?(data[:level])
+        msg = unparse(data)
+        mtx.synchronize do
+          @stream.puts(msg)
+        end
       end
     end
 
@@ -105,5 +115,14 @@ module Scrolls
         end
       end
     end
+
+    def log_level_ok?(level)
+      if level
+        LOG_LEVEL_MAP[level.to_s] <= LOG_LEVEL
+      else
+        true
+      end
+    end
+
   end
 end
