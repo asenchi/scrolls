@@ -17,11 +17,17 @@ module Scrolls
     extend self
 
     LOG_LEVEL = (ENV["LOG_LEVEL"] || 3).to_i
+
+    #http://tools.ietf.org/html/rfc5424#page-11
     LOG_LEVEL_MAP = {
-      "fatal" => 0,
-      "error" => 1,
-      "warn"  => 2,
-      "info"  => 3
+      "emergency" => 0,
+      "alert"     => 1,
+      "critical"  => 2,
+      "error"     => 3,
+      "warning"   => 4,
+      "notice"    => 5,
+      "info"      => 6,
+      "debug"     => 7
     }
 
     attr_accessor :stream
