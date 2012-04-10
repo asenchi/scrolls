@@ -16,6 +16,20 @@ module Scrolls
   module Log
     extend self
 
+    LOG_LEVEL = (ENV["LOG_LEVEL"] || 3).to_i
+
+    #http://tools.ietf.org/html/rfc5424#page-11
+    LOG_LEVEL_MAP = {
+      "emergency" => 0,
+      "alert"     => 1,
+      "critical"  => 2,
+      "error"     => 3,
+      "warning"   => 4,
+      "notice"    => 5,
+      "info"      => 6,
+      "debug"     => 7
+    }
+
     attr_accessor :stream
 
     def start(out = nil)
@@ -36,9 +50,11 @@ module Scrolls
     end
 
     def write(data)
-      msg = unparse(data)
-      mtx.synchronize do
-        @stream.puts(msg)
+      if log_level_ok?(data[:level])
+        msg = unparse(data)
+        mtx.synchronize do
+          @stream.puts(msg)
+        end
       end
     end
 
@@ -105,5 +121,14 @@ module Scrolls
         end
       end
     end
+
+    def log_level_ok?(level)
+      if level
+        LOG_LEVEL_MAP[level.to_s] <= LOG_LEVEL
+      else
+        true
+      end
+    end
+
   end
 end
