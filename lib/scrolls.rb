@@ -49,6 +49,14 @@ module Scrolls
       @mtx ||= Mutex.new
     end
 
+    def context(prefix=nil)
+      @context = false
+      if prefix
+        @context = true
+        @context_prefix = prefix
+      end
+    end
+
     def write(data)
       if log_level_ok?(data[:level])
         msg = unparse(data)
@@ -78,16 +86,20 @@ module Scrolls
     end
 
     def log(data, &blk)
+      if @context
+        logdata = @context_prefix.merge(data)
+      end
+
       unless blk
-        write(data)
+        write(logdata)
       else
         start = Time.now
         res = nil
-        log(data.merge(:at => :start))
+        log(logdata.merge(:at => :start))
         begin
           res = yield
         rescue StandardError, Timeout::Error => e
-          log(data.merge(
+          log(logdata.merge(
             :at           => :exception,
             :reraise      => true,
             :class        => e.class,
@@ -97,7 +109,7 @@ module Scrolls
           ))
           raise(e)
         end
-        log(data.merge(:at => :finish, :elapsed => Time.now - start))
+        log(logdata.merge(:at => :finish, :elapsed => Time.now - start))
         res
       end
     end
