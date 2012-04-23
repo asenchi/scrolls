@@ -13,6 +13,10 @@ module Scrolls
     Log.log_exception(data, e)
   end
 
+  def context(data, &blk)
+    Log.set_context(data, &blk)
+  end
+
   module Log
     extend self
 
@@ -30,12 +34,16 @@ module Scrolls
       "debug"     => 7
     }
 
-    attr_accessor :stream
+    attr_accessor :stream, :context
 
     def start(out = nil)
       # This allows log_exceptions below to pick up the defined output,
       # otherwise stream out to STDERR
       @defined = out.nil? ? false : true
+
+      # Initialize and empty context
+      @context = {}
+
       sync_stream(out)
     end
 
@@ -78,16 +86,18 @@ module Scrolls
     end
 
     def log(data, &blk)
+      logdata = @context.merge(data)
+
       unless blk
-        write(data)
+        write(logdata)
       else
         start = Time.now
         res = nil
-        log(data.merge(:at => :start))
+        log(logdata.merge(:at => :start))
         begin
           res = yield
         rescue StandardError, Timeout::Error => e
-          log(data.merge(
+          log(logdata.merge(
             :at           => :exception,
             :reraise      => true,
             :class        => e.class,
@@ -97,7 +107,7 @@ module Scrolls
           ))
           raise(e)
         end
-        log(data.merge(:at => :finish, :elapsed => Time.now - start))
+        log(logdata.merge(:at => :finish, :elapsed => Time.now - start))
         res
       end
     end
@@ -127,6 +137,17 @@ module Scrolls
         LOG_LEVEL_MAP[level.to_s] <= LOG_LEVEL
       else
         true
+      end
+    end
+
+    def set_context(prefix, &blk)
+      @prev_context = @context
+      # Why isn't this merging
+      @context = @context.merge(prefix)
+
+      if blk
+        yield
+        @context = @prev_context if @prev_context
       end
     end
 
