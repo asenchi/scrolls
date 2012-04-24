@@ -41,9 +41,6 @@ module Scrolls
       # otherwise stream out to STDERR
       @defined = out.nil? ? false : true
 
-      # Initialize and empty context
-      @context = {}
-
       sync_stream(out)
     end
 
@@ -141,6 +138,8 @@ module Scrolls
     end
 
     def set_context(prefix, &blk)
+      # Initialize an empty context if the variable doesn't exist
+      @context = {} unless @context
       @prev_context = @context
       # Why isn't this merging
       @context = @context.merge(prefix)
