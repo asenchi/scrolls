@@ -58,7 +58,11 @@ module Scrolls
       if log_level_ok?(data[:level])
         msg = unparse(data)
         mtx.synchronize do
-          @stream.puts(msg)
+          begin
+            @stream.puts(msg)
+          rescue NoMethodError => e
+            puts "You need to start your logger, `Scrolls::Log.start`"
+          end
         end
       end
     end
@@ -83,7 +87,11 @@ module Scrolls
     end
 
     def log(data, &blk)
-      logdata = @context.merge(data)
+      if @context
+        logdata = @context.merge(data)
+      else
+        logdata = data
+      end
 
       unless blk
         write(logdata)
@@ -140,14 +148,20 @@ module Scrolls
     def set_context(prefix, &blk)
       # Initialize an empty context if the variable doesn't exist
       @context = {} unless @context
-      @prev_context = @context
+      @stash = [] unless @stash
+      @stash << @context
       # Why isn't this merging
       @context = @context.merge(prefix)
 
       if blk
         yield
-        @context = @prev_context if @prev_context
+        @context = @stash.pop
       end
+    end
+
+    def clear_context
+      @stash = []
+      @context = {}
     end
 
   end
