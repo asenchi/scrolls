@@ -13,6 +13,10 @@ module Scrolls
     Log.log_exception(data, e)
   end
 
+  def context(data, &blk)
+    Log.set_context(data, &blk)
+  end
+
   module Log
     extend self
 
@@ -30,12 +34,13 @@ module Scrolls
       "debug"     => 7
     }
 
-    attr_accessor :stream
+    attr_accessor :stream, :context
 
     def start(out = nil)
       # This allows log_exceptions below to pick up the defined output,
       # otherwise stream out to STDERR
       @defined = out.nil? ? false : true
+
       sync_stream(out)
     end
 
@@ -53,7 +58,11 @@ module Scrolls
       if log_level_ok?(data[:level])
         msg = unparse(data)
         mtx.synchronize do
-          @stream.puts(msg)
+          begin
+            @stream.puts(msg)
+          rescue NoMethodError => e
+            puts "You need to start your logger, `Scrolls::Log.start`"
+          end
         end
       end
     end
@@ -78,16 +87,22 @@ module Scrolls
     end
 
     def log(data, &blk)
+      if @context
+        logdata = @context.merge(data)
+      else
+        logdata = data
+      end
+
       unless blk
-        write(data)
+        write(logdata)
       else
         start = Time.now
         res = nil
-        log(data.merge(:at => :start))
+        log(logdata.merge(:at => :start))
         begin
           res = yield
         rescue StandardError, Timeout::Error => e
-          log(data.merge(
+          log(logdata.merge(
             :at           => :exception,
             :reraise      => true,
             :class        => e.class,
@@ -97,7 +112,7 @@ module Scrolls
           ))
           raise(e)
         end
-        log(data.merge(:at => :finish, :elapsed => Time.now - start))
+        log(logdata.merge(:at => :finish, :elapsed => Time.now - start))
         res
       end
     end
@@ -128,6 +143,25 @@ module Scrolls
       else
         true
       end
+    end
+
+    def set_context(prefix, &blk)
+      # Initialize an empty context if the variable doesn't exist
+      @context = {} unless @context
+      @stash = [] unless @stash
+      @stash << @context
+      # Why isn't this merging
+      @context = @context.merge(prefix)
+
+      if blk
+        yield
+        @context = @stash.pop
+      end
+    end
+
+    def clear_context
+      @stash = []
+      @context = {}
     end
 
   end
