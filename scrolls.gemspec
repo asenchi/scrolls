@@ -13,4 +13,5 @@ Gem::Specification.new do |gem|
   gem.name          = "scrolls"
   gem.require_paths = ["lib"]
   gem.version       = Scrolls::VERSION
+  gem.add_dependency("atomic", "~> 1.0.0")
 end
