@@ -34,7 +34,15 @@ module Scrolls
       "debug"     => 7
     }
 
-    attr_accessor :stream, :context
+    attr_accessor :stream
+
+    def context
+      Thread.current[:scrolls_context] ||= {}
+    end
+
+    def context=(hash)
+      Thread.current[:scrolls_context] = hash
+    end
 
     def start(out = nil)
       # This allows log_exceptions below to pick up the defined output,
@@ -87,11 +95,7 @@ module Scrolls
     end
 
     def log(data, &blk)
-      if @context
-        logdata = @context.merge(data)
-      else
-        logdata = data
-      end
+      logdata = context.merge(data)
 
       unless blk
         write(logdata)
@@ -145,23 +149,11 @@ module Scrolls
       end
     end
 
-    def set_context(prefix, &blk)
-      # Initialize an empty context if the variable doesn't exist
-      @context = {} unless @context
-      @stash = [] unless @stash
-      @stash << @context
-      # Why isn't this merging
-      @context = @context.merge(prefix)
-
-      if blk
-        yield
-        @context = @stash.pop
-      end
-    end
-
-    def clear_context
-      @stash = []
-      @context = {}
+    def set_context(prefix)
+      old_context = context
+      self.context = old_context.merge(prefix)
+      yield if block_given?
+      self.context = old_context
     end
 
   end
