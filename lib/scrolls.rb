@@ -149,19 +149,25 @@ module Scrolls
       # Initialize an empty context if the variable doesn't exist
       @context = {} unless @context
       @stash = [] unless @stash
-      @stash << @context
-      # Why isn't this merging
-      @context = @context.merge(prefix)
+
+      copy = Array.new(@stash)
+      copy << @context
+
+      mtx.synchronize { @context = @context.merge(prefix) }
 
       if blk
         yield
-        @context = @stash.pop
+        mtx.synchronize { @context = copy.pop }
       end
+
+      mtx.synchronize { @stash = copy }
     end
 
     def clear_context
-      @stash = []
-      @context = {}
+      mtx.synchronize do
+        @stash = []
+        @context = {}
+      end
     end
 
   end
