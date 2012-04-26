@@ -1,4 +1,5 @@
 require "thread"
+require "atomic"
 
 require "scrolls/version"
 
@@ -13,8 +14,12 @@ module Scrolls
     Log.log_exception(data, e)
   end
 
+  def global_context(data)
+    Log.global_context = data
+  end
+
   def context(data, &blk)
-    Log.set_context(data, &blk)
+    Log.with_context(data, &blk)
   end
 
   module Log
@@ -34,7 +39,15 @@ module Scrolls
       "debug"     => 7
     }
 
-    attr_accessor :stream, :context
+    attr_accessor :stream
+
+    def context
+      Thread.current[:scrolls_context] ||= {}
+    end
+
+    def context=(hash)
+      Thread.current[:scrolls_context] = hash
+    end
 
     def start(out = nil)
       # This allows log_exceptions below to pick up the defined output,
@@ -42,6 +55,7 @@ module Scrolls
       @defined = out.nil? ? false : true
 
       sync_stream(out)
+      @global_context = Atomic.new({})
     end
 
     def sync_stream(out = nil)
@@ -87,11 +101,8 @@ module Scrolls
     end
 
     def log(data, &blk)
-      if @context
-        logdata = @context.merge(data)
-      else
-        logdata = data
-      end
+      merged_context = @global_context.value.merge(context)
+      logdata = merged_context.merge(data)
 
       unless blk
         write(logdata)
@@ -145,23 +156,16 @@ module Scrolls
       end
     end
 
-    def set_context(prefix, &blk)
-      # Initialize an empty context if the variable doesn't exist
-      @context = {} unless @context
-      @stash = [] unless @stash
-      @stash << @context
-      # Why isn't this merging
-      @context = @context.merge(prefix)
-
-      if blk
-        yield
-        @context = @stash.pop
-      end
+    def with_context(prefix)
+      return unless block_given?
+      old_context = context
+      self.context = old_context.merge(prefix)
+      yield if block_given?
+      self.context = old_context
     end
 
-    def clear_context
-      @stash = []
-      @context = {}
+    def global_context=(data)
+      @global_context.update { |_| data }
     end
 
   end
