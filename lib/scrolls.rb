@@ -1,4 +1,5 @@
 require "thread"
+require "atomic"
 
 require "scrolls/version"
 
@@ -13,8 +14,12 @@ module Scrolls
     Log.log_exception(data, e)
   end
 
+  def global_context(data)
+    Log.global_context = data
+  end
+
   def context(data, &blk)
-    Log.set_context(data, &blk)
+    Log.with_context(data, &blk)
   end
 
   module Log
@@ -50,6 +55,7 @@ module Scrolls
       @defined = out.nil? ? false : true
 
       sync_stream(out)
+      @global_context = Atomic.new({})
     end
 
     def sync_stream(out = nil)
@@ -95,7 +101,8 @@ module Scrolls
     end
 
     def log(data, &blk)
-      logdata = context.merge(data)
+      merged_context = @global_context.value.merge(context)
+      logdata = merged_context.merge(data)
 
       unless blk
         write(logdata)
@@ -149,11 +156,16 @@ module Scrolls
       end
     end
 
-    def set_context(prefix)
+    def with_context(prefix)
+      return unless block_given?
       old_context = context
       self.context = old_context.merge(prefix)
       yield if block_given?
       self.context = old_context
+    end
+
+    def global_context=(data)
+      @global_context.update { |_| data }
     end
 
   end
