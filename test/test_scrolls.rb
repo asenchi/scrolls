@@ -1,8 +1,7 @@
-require "stringio"
 require "minitest/autorun"
 
-$: << "../lib"
-require "scrolls"
+$:.unshift File.expand_path(File.join("..", "lib"))
+require "scrolls/log"
 
 class TestScrollsParser < MiniTest::Unit::TestCase
   def test_unparse_tags
@@ -29,3 +28,4 @@ class TestScrollsParser < MiniTest::Unit::TestCase
     assert "test=0.300" == Scrolls::Log.unparse(data)
   end
 end
+
