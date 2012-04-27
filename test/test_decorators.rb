@@ -66,5 +66,17 @@ class TestDecorators < MiniTest::Unit::TestCase
     assert_equal "myservice release=v51 basic that works data=useful number=10\n", @@output.gets
   end
 
+  def test_wraps_method
+    @service.basic_wrap_with_logging
+    assert_equal "myservice release=v51 class=MyService method=basic_wrap_with_logging at=start\n", @@output.gets
+    assert_includes @@output.gets, "myservice release=v51 class=MyService method=basic_wrap_with_logging at=finish elapsed=0.1"
+  end
+
+  def test_wraps_method_with_context
+    @service.wrap_with_more_context
+    assert_equal "myservice release=v51 wrap_with_more_context rule=always class=MyService method=wrap_with_more_context at=start\n", @@output.gets
+    assert_includes @@output.gets, "myservice release=v51 wrap_with_more_context rule=always class=MyService method=wrap_with_more_context at=finish elapsed=0.1"
+  end
+
 end
 
