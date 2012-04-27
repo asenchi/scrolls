@@ -14,4 +14,5 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = Scrolls::VERSION
   gem.add_dependency("atomic", "~> 1.0.0")
+  gem.add_development_dependency("rake")
 end
