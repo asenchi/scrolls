@@ -1,6 +1,8 @@
 require "thread"
 require "atomic"
 
+require "scrolls"
+
 module Scrolls
   module Log
     extend self
