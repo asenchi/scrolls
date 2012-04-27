@@ -8,6 +8,7 @@ module Scrolls
     extend self
 
     LOG_LEVEL = (ENV["LOG_LEVEL"] || 3).to_i
+    @@global_context = Atomic.new({})
 
     #http://tools.ietf.org/html/rfc5424#page-11
     LOG_LEVEL_MAP = {
@@ -35,9 +36,7 @@ module Scrolls
       # This allows log_exceptions below to pick up the defined output,
       # otherwise stream out to STDERR
       @defined = out.nil? ? false : true
-
       sync_stream(out)
-      @global_context = Atomic.new({})
     end
 
     def sync_stream(out = nil)
@@ -83,7 +82,7 @@ module Scrolls
     end
 
     def log(data, &blk)
-      merged_context = @global_context.value.merge(context)
+      merged_context = @@global_context.value.merge(context)
       logdata = merged_context.merge(data)
 
       unless blk
@@ -147,7 +146,7 @@ module Scrolls
     end
 
     def global_context=(data)
-      @global_context.update { |_| data }
+      @@global_context.update { |_| data }
     end
 
   end
