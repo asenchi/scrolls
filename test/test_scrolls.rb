@@ -1,31 +1,37 @@
-require "stringio"
-require "minitest/autorun"
+require_relative "test_helper"
 
-$: << "../lib"
-require "scrolls"
 
-class TestScrollsParser < MiniTest::Unit::TestCase
-  def test_unparse_tags
-    data = {:test => true, :tag => true}
-    assert "test tag" == Scrolls::Log.unparse(data)
+class TestScrolls < Test::Unit::TestCase
+  def setup
+    @out = StringIO.new
+    Scrolls.stream = @out
   end
 
-  def test_unparse_strings
-    data = {:test => "strings"}
-    assert "test=strings" == Scrolls::Log.unparse(data)
-
-    data = {:s => "echo 'hello' \"world\""}
-    assert 's="echo \'hello\' ..."' == Scrolls::Log.unparse(data)
-
-    data = {:s => "hello world"}
-    assert 's="hello world"' == Scrolls::Log.unparse(data)
-
-    data = {:s => "hello world\\"}
-    assert 's="hello world\"' == Scrolls::Log.unparse(data)
+  def test_construct
+    assert_equal StringIO, Scrolls.stream.class
   end
 
-  def test_unparse_floats
-    data = {:test => 0.3}
-    assert "test=0.300" == Scrolls::Log.unparse(data)
+  def test_default_time_unit
+    assert_equal "seconds", Scrolls.time_unit
+  end
+
+  def test_setting_time_unit
+    Scrolls.time_unit = "milliseconds"
+    assert_equal "milliseconds", Scrolls.time_unit
+  end
+
+  def test_logging
+    Scrolls.log(test: "basic")
+    assert_equal "test=basic\n", @out.string
+  end
+
+  def test_log_exception
+    begin
+      raise Exception
+    rescue Exception => e
+      Scrolls.log_exception({test: "exception"}, e)
+    end
+    @out.truncate(27)
+    assert_equal "test=exception at=exception", @out.string
   end
 end
