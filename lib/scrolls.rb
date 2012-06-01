@@ -6,26 +6,88 @@ require "scrolls/version"
 module Scrolls
   extend self
 
+  # Public: Log data and/or wrap a block with start/finish
+  #
+  # data - A hash of key/values to log
+  # blk  - A block to be wrapped by log lines
+  #
+  # Examples:
+  #
+  #   Scrolls.log(test: "test")
+  #   test=test
+  #   => nil
+  #
+  #   Scrolls.log(test: "test") { puts "inner block" }
+  #   at=start
+  #   inner block
+  #   at=finish elapsed=0.000
+  #   => nil
+  #
   def log(data, &blk)
     Log.log(data, &blk)
   end
 
+  # Public: Log an exception
+  #
+  # data - A hash of key/values to log
+  # e    - An exception to pass to the logger
+  #
+  # Examples:
+  #
+  #   begin
+  #     raise Exception
+  #   rescue Exception => e
+  #     Scrolls.log_exception({test: "test"}, e)
+  #   end
+  #   test=test at=exception class=Exception message=Exception exception_id=70321999017240
+  #   ...
+  #
   def log_exception(data, e)
     Log.log_exception(data, e)
   end
 
+  # Public: Setup a new output (default: STDOUT)
+  #
+  # out - New output
+  #
+  # Examples
+  #
+  #   Scrolls.stream = StringIO.new
+  #
   def stream=(out)
     Log.stream=(out)
   end
 
+  # Public: Return the stream
+  #
+  # Examples
+  #
+  #   Scrolls.stream
+  #   => #<IO:<STDOUT>>
+  #
   def stream
     Log.stream
   end
 
+  # Public: Set the time unit we use for 'elapsed' (default: "seconds")
+  #
+  # unit - The time unit ("milliseconds" currently supported)
+  #
+  # Examples
+  #
+  #   Scrolls.time_unit = "millisends"
+  #
   def time_unit=(unit)
     Log.time_unit=(unit)
   end
 
+  # Public: Return the time unit currently configured
+  #
+  # Examples
+  #
+  #   Scrolls.time_unit
+  #   => "seconds"
+  #
   def time_unit
     Log.time_unit
   end

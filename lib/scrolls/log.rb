@@ -54,7 +54,7 @@ module Scrolls
     end
 
     def log_exception(data, e)
-      stream(STDERR) unless @defined
+      sync_stream(STDERR) unless @defined
 
       log(data.merge(
           :at => "exception",
