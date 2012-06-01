@@ -1,6 +1,5 @@
 require_relative "test_helper"
 
-
 class TestScrolls < Test::Unit::TestCase
   def setup
     @out = StringIO.new
@@ -23,6 +22,12 @@ class TestScrolls < Test::Unit::TestCase
   def test_logging
     Scrolls.log(test: "basic")
     assert_equal "test=basic\n", @out.string
+  end
+
+  def test_logging_block
+    Scrolls.log(outer: "o") { Scrolls.log(inner: "i") }
+    output = "outer=o at=start\ninner=i\nouter=o at=finish elapsed=0.000\n"
+    assert_equal output, @out.string
   end
 
   def test_log_exception

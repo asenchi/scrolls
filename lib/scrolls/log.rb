@@ -34,7 +34,7 @@ module Scrolls
       else
         start = Time.now
         res = nil
-        log(at: "start")
+        log(data.merge(at: "start"))
         begin
           res = yield
         rescue StandardError, Timeout::Error => e
@@ -48,7 +48,7 @@ module Scrolls
           )
           raise e
         end
-        log(at: "finish", elapsed: calc_time(start, Time.now))
+        log(data.merge(at: "finish", elapsed: calc_time(start, Time.now)))
         res
       end
     end

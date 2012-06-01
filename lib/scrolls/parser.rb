@@ -1,5 +1,6 @@
 module Scrolls
   module Parser
+    extend self
 
     def unparse(data)
       data.map do |(k,v)|
@@ -28,19 +29,23 @@ module Scrolls
 
       patterns = [
         /([^= ]+)="([^"\\]*(\\.[^"\\]*)*)"/, # key="\"literal\" escaped val"
-        /([^= ]+)="([^ =]+)/                 # key=value
+        /([^= ]+)=([^ =]+)/                  # key=value
       ]
 
       patterns.each do |pattern|
-        str.scan(pattern) do
+        str.scan(pattern) do |match|
           v = match[1]
           v.gsub!(/\\"/, '"')                # unescape \"
           v.gsub!(/\\\\/, "\\")              # unescape \\
 
           if v.to_i.to_s == v                # cast value to int or float
             v = v.to_i
-          elsif format("%.5f", v.to_f) == v
+          elsif format("%.3f", v.to_f) == v
             v = v.to_f
+          elsif v == "false"
+            v = false
+          elsif v == "true"
+            v = true
           end
 
           vals[match[0]] = v
@@ -51,7 +56,7 @@ module Scrolls
 
       # rebuild in-order key: value hash
       str.split.inject({}) do |h,k|
-        h[k.to_sym] = vals[k] || true
+        h[k.to_sym] = vals[k]
         h
       end
     end
