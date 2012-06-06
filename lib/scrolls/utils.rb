@@ -13,8 +13,8 @@ module Scrolls
       return {} if l.empty?
       l.inject({}) do |h, i|
         h[i.to_sym] = true
+        h
       end
-      h
     end
 
   end
