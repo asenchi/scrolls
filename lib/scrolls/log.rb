@@ -20,6 +20,14 @@ module Scrolls
       "debug"     => 7
     }
 
+    def global_context
+      get_global_context
+    end
+
+    def global_context=(data)
+      set_global_context(data)
+    end
+
     def stream=(out=nil)
       @defined = out.nil? ? false : true
 
@@ -39,12 +47,16 @@ module Scrolls
     end
 
     def log(data, &blk)
+      if gc = get_global_context
+        logdata = gc.merge(data)
+      end
+
       unless blk
-        write(data)
+        write(logdata)
       else
         start = Time.now
         res = nil
-        log(data.merge(at: "start"))
+        log(logdata.merge(at: "start"))
         begin
           res = yield
         rescue StandardError, Timeout::Error => e
@@ -58,7 +70,7 @@ module Scrolls
           )
           raise e
         end
-        log(data.merge(at: "finish", elapsed: calc_time(start, Time.now)))
+        log(logdata.merge(at: "finish", elapsed: calc_time(start, Time.now)))
         res
       end
     end
@@ -66,7 +78,11 @@ module Scrolls
     def log_exception(data, e)
       sync_stream(STDERR) unless @defined
 
-      log(data.merge(
+      if gc = get_global_context
+        logdata = gc.merge(data)
+      end
+
+      log(logdata.merge(
           :at => "exception",
           :class        => e.class,
           :message      => e.message,
@@ -75,7 +91,7 @@ module Scrolls
       if e.backtrace
         bt = e.backtrace.reverse
         bt[0, bt.size-6].each do |line|
-          log(data.merge(
+          log(logdata.merge(
               :at => "exception",
               :class => e.message,
               :exception_id => e.object_id.abs,
@@ -86,6 +102,20 @@ module Scrolls
     end
 
     private
+
+    def get_global_context
+      default_global_context unless @global_context
+      @global_context.value
+    end
+
+    def set_global_context(data=nil)
+      default_global_context unless @global_context
+      @global_context.update { |_| data }
+    end
+
+    def default_global_context
+      @global_context = Atomic.new({})
+    end
 
     def set_time_unit(u=nil)
       if ["ms", "milli", "milliseconds", 1000].include?(u)

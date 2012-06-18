@@ -10,6 +10,16 @@ class TestScrolls < Test::Unit::TestCase
     assert_equal StringIO, Scrolls.stream.class
   end
 
+  def test_default_global_context
+    assert_equal Hash.new, Scrolls.global_context
+  end
+
+  def test_setting_global_context
+    Scrolls.global_context(global: "g")
+    Scrolls.log(data: "d")
+    assert_equal "global=g data=d\n", @out.string
+  end
+
   def test_default_time_unit
     assert_equal "seconds", Scrolls.time_unit
   end
