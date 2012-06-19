@@ -98,7 +98,7 @@ module Scrolls
   #
   # Examples
   #
-  #   Scrolls.time_unit = "millisends"
+  #   Scrolls.time_unit = "milliseconds"
   #
   def time_unit=(unit)
     Log.time_unit=(unit)
