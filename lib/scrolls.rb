@@ -1,172 +1,117 @@
 require "thread"
-require "atomic"
-
+require "scrolls/atomic"
+require "scrolls/log"
 require "scrolls/version"
 
 module Scrolls
   extend self
 
-  def log(data, &blk)
-    Log.log(data, &blk)
-  end
-
-  def log_exception(data, e)
-    Log.log_exception(data, e)
-  end
-
-  def global_context(data)
-    Log.global_context = data
-  end
-
+  # Public: Set a context in a block for logs
+  #
+  # data - A hash of key/values to prepend to each log in a block
+  # blk  - The block that our context wraps
+  #
+  # Examples:
+  #
   def context(data, &blk)
     Log.with_context(data, &blk)
   end
 
-  module Log
-    extend self
-
-    LOG_LEVEL = (ENV["LOG_LEVEL"] || 3).to_i
-
-    #http://tools.ietf.org/html/rfc5424#page-11
-    LOG_LEVEL_MAP = {
-      "emergency" => 0,
-      "alert"     => 1,
-      "critical"  => 2,
-      "error"     => 3,
-      "warning"   => 4,
-      "notice"    => 5,
-      "info"      => 6,
-      "debug"     => 7
-    }
-
-    attr_accessor :stream
-
-    def context
-      Thread.current[:scrolls_context] ||= {}
+  # Public: Get or set a global context that prefixs all logs
+  #
+  # data - A hash of key/values to prepend to each log
+  #
+  def global_context(data=nil)
+    if data
+      Log.global_context = data
+    else
+      Log.global_context
     end
+  end
 
-    def context=(hash)
-      Thread.current[:scrolls_context] = hash
-    end
+  # Public: Log data and/or wrap a block with start/finish
+  #
+  # data - A hash of key/values to log
+  # blk  - A block to be wrapped by log lines
+  #
+  # Examples:
+  #
+  #   Scrolls.log(test: "test")
+  #   test=test
+  #   => nil
+  #
+  #   Scrolls.log(test: "test") { puts "inner block" }
+  #   at=start
+  #   inner block
+  #   at=finish elapsed=0.000
+  #   => nil
+  #
+  def log(data, &blk)
+    Log.log(data, &blk)
+  end
 
-    def start(out = nil)
-      # This allows log_exceptions below to pick up the defined output,
-      # otherwise stream out to STDERR
-      @defined = out.nil? ? false : true
+  # Public: Log an exception
+  #
+  # data - A hash of key/values to log
+  # e    - An exception to pass to the logger
+  #
+  # Examples:
+  #
+  #   begin
+  #     raise Exception
+  #   rescue Exception => e
+  #     Scrolls.log_exception({test: "test"}, e)
+  #   end
+  #   test=test at=exception class=Exception message=Exception exception_id=70321999017240
+  #   ...
+  #
+  def log_exception(data, e)
+    Log.log_exception(data, e)
+  end
 
-      sync_stream(out)
-      @global_context = Atomic.new({})
-    end
+  # Public: Setup a new output (default: STDOUT)
+  #
+  # out - New output
+  #
+  # Examples
+  #
+  #   Scrolls.stream = StringIO.new
+  #
+  def stream=(out)
+    Log.stream=(out)
+  end
 
-    def sync_stream(out = nil)
-      out = STDOUT if out.nil?
-      @stream = out
-      @stream.sync = true
-    end
+  # Public: Return the stream
+  #
+  # Examples
+  #
+  #   Scrolls.stream
+  #   => #<IO:<STDOUT>>
+  #
+  def stream
+    Log.stream
+  end
 
-    def mtx
-      @mtx ||= Mutex.new
-    end
+  # Public: Set the time unit we use for 'elapsed' (default: "seconds")
+  #
+  # unit - The time unit ("milliseconds" currently supported)
+  #
+  # Examples
+  #
+  #   Scrolls.time_unit = "millisends"
+  #
+  def time_unit=(unit)
+    Log.time_unit=(unit)
+  end
 
-    def write(data)
-      if log_level_ok?(data[:level])
-        msg = unparse(data)
-        mtx.synchronize do
-          begin
-            @stream.puts(msg)
-          rescue NoMethodError => e
-            puts "You need to start your logger, `Scrolls::Log.start`"
-          end
-        end
-      end
-    end
-
-    def unparse(data)
-      data.map do |(k, v)|
-        if (v == true)
-          k.to_s
-        elsif v.is_a?(Float)
-          "#{k}=#{format("%.3f", v)}"
-        elsif v.nil?
-          nil
-        else
-          v_str = v.to_s
-          if (v_str =~ /^[a-zA-z0-9\-\_\.]+$/)
-            "#{k}=#{v_str}"
-          else
-            "#{k}=\"#{v_str.sub(/".*/, "...")}\""
-          end
-        end
-      end.compact.join(" ")
-    end
-
-    def log(data, &blk)
-      merged_context = @global_context.value.merge(context)
-      logdata = merged_context.merge(data)
-
-      unless blk
-        write(logdata)
-      else
-        start = Time.now
-        res = nil
-        log(logdata.merge(:at => :start))
-        begin
-          res = yield
-        rescue StandardError, Timeout::Error => e
-          log(logdata.merge(
-            :at           => :exception,
-            :reraise      => true,
-            :class        => e.class,
-            :message      => e.message,
-            :exception_id => e.object_id.abs,
-            :elapsed      => Time.now - start
-          ))
-          raise(e)
-        end
-        log(logdata.merge(:at => :finish, :elapsed => Time.now - start))
-        res
-      end
-    end
-
-    def log_exception(data, e)
-      sync_stream(STDERR) unless @defined
-      log(data.merge(
-        :exception    => true,
-        :class        => e.class,
-        :message      => e.message,
-        :exception_id => e.object_id.abs
-      ))
-      if e.backtrace
-        bt = e.backtrace.reverse
-        bt[0, bt.size-6].each do |line|
-          log(data.merge(
-            :exception    => true,
-            :exception_id => e.object_id.abs,
-            :site         => line.gsub(/[`'"]/, "")
-          ))
-        end
-      end
-    end
-
-    def log_level_ok?(level)
-      if level
-        LOG_LEVEL_MAP[level.to_s] <= LOG_LEVEL
-      else
-        true
-      end
-    end
-
-    def with_context(prefix)
-      return unless block_given?
-      old_context = context
-      self.context = old_context.merge(prefix)
-      yield if block_given?
-      self.context = old_context
-    end
-
-    def global_context=(data)
-      @global_context.update { |_| data }
-    end
-
+  # Public: Return the time unit currently configured
+  #
+  # Examples
+  #
+  #   Scrolls.time_unit
+  #   => "seconds"
+  #
+  def time_unit
+    Log.time_unit
   end
 end
