@@ -2,6 +2,9 @@ require "scrolls/parser"
 require "scrolls/utils"
 
 module Scrolls
+
+  class TimeUnitError < RuntimeError; end
+
   module Log
     extend self
 
@@ -19,6 +22,14 @@ module Scrolls
       "info"      => 6,
       "debug"     => 7
     }
+
+    def context
+      Thread.current[:scrolls_context] ||= {}
+    end
+
+    def context=(h)
+      Thread.current[:scrolls_context] = h
+    end
 
     def global_context
       get_global_context
@@ -48,7 +59,8 @@ module Scrolls
 
     def log(data, &blk)
       if gc = get_global_context
-        logdata = gc.merge(data)
+        ctx = gc.merge(context)
+        logdata = ctx.merge(data)
       end
 
       unless blk
@@ -101,6 +113,14 @@ module Scrolls
       end
     end
 
+    def with_context(prefix)
+      return unless block_given?
+      old = context
+      self.context = old.merge(prefix)
+      yield if block_given?
+      self.context = old
+    end
+
     private
 
     def get_global_context
@@ -118,6 +138,10 @@ module Scrolls
     end
 
     def set_time_unit(u=nil)
+      unless ["ms","milli","milliseconds","s","seconds"].include?(u)
+        raise TimeUnitError, "Specify only 'seconds' or 'milliseconds'"
+      end
+
       if ["ms", "milli", "milliseconds", 1000].include?(u)
         @tunit = "milliseconds"
         @t = 1000.0

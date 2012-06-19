@@ -6,6 +6,17 @@ require "scrolls/version"
 module Scrolls
   extend self
 
+  # Public: Set a context in a block for logs
+  #
+  # data - A hash of key/values to prepend to each log in a block
+  # blk  - The block that our context wraps
+  #
+  # Examples:
+  #
+  def context(data, &blk)
+    Log.with_context(data, &blk)
+  end
+
   # Public: Get or set a global context that prefixs all logs
   #
   # data - A hash of key/values to prepend to each log
