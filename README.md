@@ -28,7 +28,9 @@ to produce metrics and monitoring data that we can alert on.
 
 Here's an example of a log you might specify in your application:
 
-    Scrolls.log(fn: "trap", signal: s, at: "exit", status: 0)
+```ruby
+Scrolls.log(fn: "trap", signal: s, at: "exit", status: 0)
+```
 
 The output of which might be:
 
@@ -45,7 +47,9 @@ In our example above, the log message is rather generic, so in order
 to provide more context we might set a global context that links this
 log data to our application and deployment:
 
-    Scrolls.global_context(app: "myapp", deploy: ENV["DEPLOY"])
+```ruby
+Scrolls.global_context(app: "myapp", deploy: ENV["DEPLOY"])
+```
 
 This would change our log output above to:
 
@@ -54,9 +58,11 @@ This would change our log output above to:
 If we were in a file and wanted to wrap a particular point of context
 we might also do something similar to:
 
-    Scrolls.context(ns: "server") do
-      Scrolls.log(fn: "trap", signal: s, at: "exit", status: 0)
-    end
+```ruby
+Scrolls.context(ns: "server") do
+  Scrolls.log(fn: "trap", signal: s, at: "exit", status: 0)
+end
+```
 
 This would be the output (taking into consideration our global context
 above):
@@ -81,10 +87,12 @@ Here's a cheat sheet for some of the methods we use:
 Scrolls makes it easy to measure the run time of a portion of code.
 For example:
 
+```ruby
     Scrolls.log(fn: "test") do
       Scrolls.log(status: "exec")
       # Code here
     end
+```
 
 This will output the following log:
 
@@ -95,20 +103,26 @@ This will output the following log:
 You can change the time unit that Scrolls uses to "milliseconds" (the
 default is "seconds"):
 
+```ruby
     Scrolls.time_unit = "ms"
+```
 
 Scrolls has a rich #parse method to handle a number of cases. Here is
 a look at some of the ways Scrolls handles certain values.
 
 Time and nil:
 
+```ruby
     Scrolls.log(t: Time.at(1340118167), this: nil)
     t=t=2012-06-19T11:02:35-0400 this=nil
+```
 
 True/False:
 
+```ruby
     Scorlls.log(that: false, this: true)
     that=false this=true
+```
 
 ## History
 
