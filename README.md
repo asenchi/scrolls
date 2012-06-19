@@ -120,7 +120,7 @@ Time and nil:
 True/False:
 
 ```ruby
-    Scorlls.log(that: false, this: true)
+    Scrolls.log(that: false, this: true)
     that=false this=true
 ```
 
