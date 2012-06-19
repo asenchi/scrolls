@@ -39,4 +39,14 @@ class TestScrollsParser < Test::Unit::TestCase
     data = { s1: :symbol, s2: Scrolls }
     assert_equal "s1=symbol s2=Scrolls", unparse(data)
   end
+
+  def test_parse_time
+    data = { t: Time.at(1340118155) }
+    assert_equal "t=2012-06-19T11:02:35-0400", unparse(data)
+  end
+
+  def test_parse_nil
+    data = { n: nil }
+    assert_equal "n=nil", unparse(data)
+  end
 end
