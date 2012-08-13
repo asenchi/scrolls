@@ -114,7 +114,7 @@ Time and nil:
 
 ```ruby
     Scrolls.log(t: Time.at(1340118167), this: nil)
-    t=t=2012-06-19T11:02:35-0400 this=nil
+    t=2012-06-19T11:02:47-0400 this=nil
 ```
 
 True/False:
