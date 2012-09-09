@@ -68,7 +68,7 @@ module Scrolls
       else
         start = Time.now
         res = nil
-        log(logdata.merge(at: "start"))
+        log(logdata.merge(:at => "start"))
         begin
           res = yield
         rescue StandardError, Timeout::Error => e
@@ -82,7 +82,7 @@ module Scrolls
           )
           raise e
         end
-        log(logdata.merge(at: "finish", elapsed: calc_time(start, Time.now)))
+        log(logdata.merge(:at => "finish", :elapsed => calc_time(start, Time.now)))
         res
       end
     end
