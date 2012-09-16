@@ -117,8 +117,9 @@ module Scrolls
       return unless block_given?
       old = context
       self.context = old.merge(prefix)
-      yield if block_given?
+      res = yield if block_given?
       self.context = old
+      res
     end
 
     private
