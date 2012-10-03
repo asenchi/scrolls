@@ -71,7 +71,7 @@ module Scrolls
         log(logdata.merge(:at => "start"))
         begin
           res = yield
-        rescue StandardError, Timeout::Error => e
+        rescue StandardError => e
           log(
             :at           => "exception",
             :reraise      => true,
