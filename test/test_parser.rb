@@ -2,7 +2,7 @@ require_relative "test_helper"
 
 class TestScrollsParser < Test::Unit::TestCase
   include Scrolls::Parser
-  
+
   def test_parse_bool
     data = { test: true, exec: false }
     assert_equal "test=true exec=false", unparse(data)
@@ -41,8 +41,9 @@ class TestScrollsParser < Test::Unit::TestCase
   end
 
   def test_parse_time
-    data = { t: Time.at(1340118155) }
-    assert_equal "t=2012-06-19T08:02:35-0700", unparse(data)
+    v = 1340118155
+    data = { t: Time.at(v) }
+    assert_equal "t=#{Time.at(v).strftime("%FT%H:%M:%S%z")}", unparse(data)
   end
 
   def test_parse_nil
