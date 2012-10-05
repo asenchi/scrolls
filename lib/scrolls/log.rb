@@ -72,14 +72,14 @@ module Scrolls
         begin
           res = yield
         rescue StandardError => e
-          log(
+          log(logdata.merge(
             :at           => "exception",
             :reraise      => true,
             :class        => e.class,
             :message      => e.message,
             :exception_id => e.object_id.abs,
             :elapsed      => calc_time(start, Time.now)
-          )
+          ))
           raise e
         end
         log(logdata.merge(:at => "finish", :elapsed => calc_time(start, Time.now)))
