@@ -118,6 +118,7 @@ module Scrolls
       old = context
       self.context = old.merge(prefix)
       res = yield if block_given?
+    ensure
       self.context = old
       res
     end

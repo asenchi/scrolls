@@ -72,6 +72,18 @@ class TestScrolls < Test::Unit::TestCase
     assert_equal output, @out.string
   end
 
+  def test_context_after_exception
+    begin
+      Scrolls.context(c: 'c') do
+        raise "Error from inside of context"
+      end
+      fail "Exception did not escape context block"
+    rescue => e
+      Scrolls.log(o: 'o')
+      assert_equal "o=o\n", @out.string
+    end
+  end
+
   def test_default_time_unit
     assert_equal "seconds", Scrolls.time_unit
   end
