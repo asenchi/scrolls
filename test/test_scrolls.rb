@@ -116,7 +116,10 @@ class TestScrolls < Test::Unit::TestCase
     rescue Exception => e
       Scrolls.log_exception({test: "exception"}, e)
     end
-    @out.truncate(27)
-    assert_equal "test=exception at=exception", @out.string
+
+    oneline_backtrace = @out.string.gsub("\n", 'XX')
+
+    assert_match /test=exception at=exception.*test_log_exception.*XX.*minitest/,
+      oneline_backtrace
   end
 end
