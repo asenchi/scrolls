@@ -101,8 +101,7 @@ module Scrolls
           :exception_id => e.object_id.abs
       ))
       if e.backtrace
-        bt = e.backtrace.reverse
-        bt[0, bt.size-6].each do |line|
+        e.backtrace.each do |line|
           log(logdata.merge(
               :at => "exception",
               :class => e.message,
