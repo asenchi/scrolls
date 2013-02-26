@@ -21,12 +21,16 @@ class TestScrollsParser < Test::Unit::TestCase
     assert_equal 's="echo \'hello\' \\"world\\""', unparse(data)
     assert_equal data.inspect, parse(unparse(data)).inspect
 
+    data = { s: 'echo "hello"' }
+    assert_equal "s='echo \"hello\"'", unparse(data)
+    assert_equal data.inspect, parse(unparse(data)).inspect
+
     data = { s: "hello world" }
     assert_equal 's="hello world"', unparse(data)
     assert_equal data.inspect, parse(unparse(data)).inspect
 
-    data = { s: "slasher\\" }
-    assert_equal 's="slasher\\\\"', unparse(data)
+    data = { s: "slasher \\" }
+    assert_equal 's="slasher \\\\"', unparse(data)
     assert_equal data.inspect, parse(unparse(data)).inspect
 
     # simple value is unquoted
