@@ -14,10 +14,19 @@ module Scrolls
           "#{k}=nil"
         elsif v.is_a?(Time)
           "#{k}=#{Time.at(v).strftime("%FT%H:%M:%S%z")}"
-        elsif v.is_a?(String) && v =~ /\\|\"| /
-          v = v.gsub(/\\|"/) { |c| "\\#{c}" }
-          "#{k}=\"#{v}\""
         else
+          v = v.to_s
+          has_single_quote = v.index("'")
+          has_double_quote = v.index('"')
+          if v =~ / /
+            if has_single_quote && has_double_quote
+              v = '"' + v.gsub(/\\|"/) { |c| "\\#{c}" } + '"'
+            elsif has_double_quote
+              v = "'" + v.gsub('\\', '\\\\\\') + "'"
+            else
+              v = '"' + v.gsub('\\', '\\\\\\') + '"'
+            end
+          end
           "#{k}=#{v}"
         end
       end.compact.join(" ")
@@ -28,8 +37,9 @@ module Scrolls
       str = data.dup if data.is_a?(String)
 
       patterns = [
-        /([^= ]+)="([^"\\]*(\\.[^"\\]*)*)"/, # key="\"literal\" escaped val"
-        /([^= ]+)=([^ =]+)/                  # key=value
+        /([^= ]+)="((?:\\.|[^"\\])*)"/, # key="\"literal\" escaped val"
+        /([^= ]+)='((?:\\.|[^'\\])*)'/, # key='\'literal\' escaped val'
+        /([^= ]+)=([^ =]+)/             # key=value
       ]
 
       patterns.each do |pattern|
