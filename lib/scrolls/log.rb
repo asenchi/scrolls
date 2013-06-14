@@ -39,6 +39,12 @@ module Scrolls
       set_global_context(data)
     end
 
+    def add_global_context(data)
+      mtx.synchronize do
+        set_global_context(get_global_context.merge(data))
+      end
+    end
+
     def stream=(out=nil)
       @defined = out.nil? ? false : true
 

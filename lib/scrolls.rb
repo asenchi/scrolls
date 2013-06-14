@@ -28,6 +28,10 @@ module Scrolls
       Log.global_context
     end
   end
+  
+  def add_global_context(data)
+    Log.add_global_context(data)
+  end
 
   # Public: Log data and/or wrap a block with start/finish
   #
