@@ -23,6 +23,13 @@ class TestScrolls < Test::Unit::TestCase
     Scrolls.log(d: "d")
     assert_equal "g=g d=d\n", @out.string
   end
+  
+  def test_adding_to_global_context
+    Scrolls.global_context(g: "g")
+    Scrolls.add_global_context(h: "h")
+    Scrolls.log(d: "d")
+    assert_equal "g=g h=h d=d\n", @out.string
+  end
 
   def test_default_context
     Scrolls.log(data: "d")
