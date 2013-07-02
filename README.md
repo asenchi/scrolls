@@ -55,6 +55,13 @@ This would change our log output above to:
 
     app=myapp deploy=production fn=trap signal=TERM at=exit status=0
 
+You can also dynamically add some data to the global context like this:
+
+```ruby
+Scrolls.add_global_context(hostname: `hostname`)
+```
+
+
 If we were in a file and wanted to wrap a particular point of context
 we might also do something similar to:
 
