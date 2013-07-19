@@ -33,6 +33,14 @@ class TestScrollsParser < Test::Unit::TestCase
     assert_equal 's="slasher \\\\"', unparse(data)
     assert_equal data.inspect, parse(unparse(data)).inspect
 
+    data = {s: "x=4,y=10" }
+    assert_equal 's="x=4,y=10"', unparse(data)
+    assert_equal data.inspect, parse(unparse(data)).inspect
+
+    data = {s: "x=4, y=10" }
+    assert_equal 's="x=4, y=10"', unparse(data)
+    assert_equal data.inspect, parse(unparse(data)).inspect
+
     # simple value is unquoted
     data = { s: "hi" }
     assert_equal 's=hi', unparse(data)

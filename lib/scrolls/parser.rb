@@ -26,6 +26,8 @@ module Scrolls
             else
               v = '"' + v.gsub('\\', '\\\\\\') + '"'
             end
+          elsif v =~ /=/
+            v = '"' + v + '"'
           end
           "#{k}=#{v}"
         end
