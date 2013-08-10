@@ -52,10 +52,16 @@ class TestScrollsParser < Test::Unit::TestCase
     assert_equal "s1=symbol s2=Scrolls", unparse(data)
   end
 
-  def test_parse_time
+  def test_parse_epoch_time
     v = 1340118155
     data = { t: Time.at(v) }
     assert_equal "t=#{Time.at(v).strftime("%FT%H:%M:%S%z")}", unparse(data)
+  end
+
+  def test_parse_time_object
+    now = Time.now
+    data = { t: now }
+    assert_equal "t=#{now.strftime("%FT%H:%M:%S%z")}", unparse(data)
   end
 
   def test_parse_nil

@@ -13,7 +13,7 @@ module Scrolls
         elsif v.nil?
           "#{k}=nil"
         elsif v.is_a?(Time)
-          "#{k}=#{Time.at(v).strftime("%FT%H:%M:%S%z")}"
+          "#{k}=#{v.strftime("%FT%H:%M:%S%z")}"
         else
           v = v.to_s
           has_single_quote = v.index("'")
