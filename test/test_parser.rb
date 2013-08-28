@@ -68,4 +68,10 @@ class TestScrollsParser < Test::Unit::TestCase
     data = { n: nil }
     assert_equal "n=nil", unparse(data)
   end
+
+  def test_nested_hashes
+    data = { t: { n: "v", o: "w" } }
+    assert_equal 't.n=v t.o=w', unparse(data)
+    assert_equal data.inspect, parse(unparse(data)).inspect
+  end
 end
