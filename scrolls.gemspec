@@ -14,4 +14,6 @@ Gem::Specification.new do |gem|
   gem.name          = "scrolls"
   gem.require_paths = ["lib"]
   gem.version       = Scrolls::VERSION
+
+  gem.add_dependency "SyslogLogger", "~> 2.0" if RUBY_VERSION < '2.0.0'
 end

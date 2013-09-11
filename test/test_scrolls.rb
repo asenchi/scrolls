@@ -131,11 +131,7 @@ class TestScrolls < Test::Unit::TestCase
   end
 
   def test_syslog_integration
-    if RUBY_VERSION >= '2.0.0'
-      Scrolls.stream = 'syslog'
-      assert_equal Scrolls::SyslogLogger, Scrolls.stream.class
-    else
-      true
-    end
+    Scrolls.stream = 'syslog'
+    assert_equal Scrolls::SyslogLogger, Scrolls.stream.class
   end
 end

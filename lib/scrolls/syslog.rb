@@ -1,13 +1,9 @@
-if RUBY_VERSION >= '2.0.0'
-  require 'syslog/logger'
+require 'syslog/logger'
 
-  module Scrolls
-    class SyslogLogger < ::Syslog::Logger
-      def puts(data)
-        info(data)
-      end
+module Scrolls
+  class SyslogLogger < ::Syslog::Logger
+    def puts(data)
+      info(data)
     end
   end
-else
-  true
 end
