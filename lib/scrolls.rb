@@ -1,7 +1,6 @@
 require "thread"
 require "scrolls/atomic"
 require "scrolls/log"
-require "scrolls/syslog"
 require "scrolls/version"
 
 module Scrolls
@@ -80,7 +79,7 @@ module Scrolls
   #
   # Options
   #
-  #   syslog - Load 'Syslog::Logger' (requires Ruby 2.0.0)
+  #   syslog - Load 'Syslog::Logger'
   #
   # Examples
   #
