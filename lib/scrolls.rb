@@ -1,6 +1,7 @@
 require "thread"
 require "scrolls/atomic"
 require "scrolls/log"
+require "scrolls/syslog"
 require "scrolls/version"
 
 module Scrolls
@@ -76,6 +77,10 @@ module Scrolls
   # Public: Setup a new output (default: STDOUT)
   #
   # out - New output
+  #
+  # Options
+  #
+  #   syslog - Load 'Syslog::Logger' (requires Ruby 2.0.0)
   #
   # Examples
   #

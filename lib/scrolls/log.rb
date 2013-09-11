@@ -1,5 +1,6 @@
 require "scrolls/parser"
 require "scrolls/utils"
+require "scrolls/syslog"
 
 module Scrolls
 
@@ -46,8 +47,11 @@ module Scrolls
 
     def stream=(out=nil)
       @defined = out.nil? ? false : true
-
-      @stream = sync_stream(out)
+      if out == 'syslog' and defined?(Scrolls::SyslogLogger)
+        @stream = Scrolls::SyslogLogger.new($0)
+      else
+        @stream = sync_stream
+      end
     end
 
     def stream

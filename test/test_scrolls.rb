@@ -129,4 +129,13 @@ class TestScrolls < Test::Unit::TestCase
     assert_match /test=exception at=exception.*test_log_exception.*XX.*minitest/,
       oneline_backtrace
   end
+
+  def test_syslog_integration
+    if RUBY_VERSION >= '2.0.0'
+      Scrolls.stream = 'syslog'
+      assert_equal Scrolls::SyslogLogger, Scrolls.stream.class
+    else
+      true
+    end
+  end
 end
