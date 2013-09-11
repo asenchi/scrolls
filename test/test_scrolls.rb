@@ -8,6 +8,9 @@ class TestScrolls < Test::Unit::TestCase
 
   def teardown
     Scrolls.global_context({})
+    # Reset our syslog context
+    Scrolls.facility = Scrolls::LOG_FACILITY
+    Scrolls.stream.close if Scrolls.stream.respond_to?(:close)
   end
 
   # def test_construct
@@ -133,5 +136,15 @@ class TestScrolls < Test::Unit::TestCase
   def test_syslog_integration
     Scrolls.stream = 'syslog'
     assert_equal Scrolls::SyslogLogger, Scrolls.stream.class
+  end
+
+  def test_syslog_facility
+    Scrolls.stream = 'syslog'
+    assert_equal Syslog::LOG_USER, Scrolls.facility
+  end
+
+  def test_setting_syslog_facility
+    Scrolls.facility = "local7"
+    assert_equal Syslog::LOG_LOCAL7, Scrolls.facility
   end
 end

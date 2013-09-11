@@ -28,7 +28,7 @@ module Scrolls
       Log.global_context
     end
   end
-  
+
   def add_global_context(data)
     Log.add_global_context(data)
   end
@@ -73,13 +73,36 @@ module Scrolls
     Log.log_exception(data, e)
   end
 
+  # Public: Setup a logging facility (default: Syslog::LOG_USER)
+  #
+  # facility - Syslog facility
+  #
+  # Examples
+  #
+  #   Scrolls.facility = Syslog::LOG_LOCAL7
+  #
+  def facility=(f)
+    Log.facility=(f)
+  end
+
+  # Public: Return the Syslog facility
+  #
+  # Examples
+  #
+  #   Scrolls.facility
+  #   => 8
+  #
+  def facility
+    Log.facility
+  end
+
   # Public: Setup a new output (default: STDOUT)
   #
   # out - New output
   #
   # Options
   #
-  #   syslog - Load 'Syslog::Logger'
+  #   syslog - Load 'Scrolls::SyslogLogger'
   #
   # Examples
   #

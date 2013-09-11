@@ -45,10 +45,18 @@ module Scrolls
       @global_context.update { |previous_data| previous_data.merge(new_data) }
     end
 
+    def facility=(f)
+      @facility = LOG_FACILITY_MAP[f] if f
+    end
+
+    def facility
+      @facility ||= default_log_facility
+    end
+
     def stream=(out=nil)
       @defined = out.nil? ? false : true
       if out == 'syslog'
-        @stream = Scrolls::SyslogLogger.new($0)
+        @stream = Scrolls::SyslogLogger.new($0, facility)
       else
         @stream = sync_stream(out)
       end
@@ -202,5 +210,8 @@ module Scrolls
       end
     end
 
+    def default_log_facility
+      LOG_FACILITY
+    end
   end
 end
