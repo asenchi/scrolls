@@ -4,7 +4,7 @@ if RUBY_VERSION >= '2.0.0'
   module Scrolls
     class SyslogLogger < ::Syslog::Logger
       def puts(data)
-        warn(data)
+        info(data)
       end
     end
   end
