@@ -89,7 +89,10 @@ module Scrolls
         logdata = ctx.merge(data)
       end
 
-      logdata.merge!(:now => Time.now) if add_timestamp
+      # By merging the logdata into the timestamp, rather than visa-versa, we
+      # ensure that the timestamp comes first in the Hash, and is placed first
+      # on the output, which helps with readability.
+      logdata = { :now => Time.now }.merge(logdata) if add_timestamp
 
       unless blk
         write(logdata)
