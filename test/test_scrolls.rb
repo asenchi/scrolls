@@ -13,9 +13,9 @@ class TestScrolls < Test::Unit::TestCase
     Scrolls.stream.close if Scrolls.stream.respond_to?(:close)
   end
 
-  # def test_construct
-  #   assert_equal StringIO, Scrolls.stream.class
-  # end
+  def test_construct
+    assert_equal StringIO, Scrolls.stream.class
+  end
 
   def test_default_global_context
     assert_equal Hash.new, Scrolls.global_context
