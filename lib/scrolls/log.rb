@@ -1,6 +1,7 @@
 require "scrolls/parser"
 require "scrolls/utils"
 require "scrolls/syslog"
+require "time"
 
 module Scrolls
 
@@ -74,11 +75,21 @@ module Scrolls
       @tunit ||= default_time_unit
     end
 
+    def add_timestamp=(b)
+      @add_timestamp = !!b
+    end
+
+    def add_timestamp
+      @add_timestamp || false
+    end
+
     def log(data, &blk)
       if gc = get_global_context
         ctx = gc.merge(context)
         logdata = ctx.merge(data)
       end
+
+      logdata.merge!(:t => Time.now) if add_timestamp
 
       unless blk
         write(logdata)
