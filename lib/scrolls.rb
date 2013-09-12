@@ -146,7 +146,7 @@ module Scrolls
     Log.time_unit
   end
 
-  # Public: Set whether to include a timestamp (t=<ISO8601>) field in the log
+  # Public: Set whether to include a timestamp (now=<ISO8601>) field in the log
   # output (default: false)
   #
   # Examples
