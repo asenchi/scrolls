@@ -56,7 +56,8 @@ module Scrolls
     def stream=(out=nil)
       @defined = out.nil? ? false : true
       if out == 'syslog'
-        @stream = Scrolls::SyslogLogger.new($0, facility)
+        progname = File.basename($0)
+        @stream = Scrolls::SyslogLogger.new(progname, facility)
       else
         @stream = sync_stream(out)
       end
