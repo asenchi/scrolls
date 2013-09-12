@@ -89,7 +89,7 @@ module Scrolls
         logdata = ctx.merge(data)
       end
 
-      logdata.merge!(:t => Time.now) if add_timestamp
+      logdata.merge!(:now => Time.now) if add_timestamp
 
       unless blk
         write(logdata)
