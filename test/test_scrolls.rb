@@ -10,7 +10,6 @@ class TestScrolls < Test::Unit::TestCase
     Scrolls.global_context({})
     # Reset our syslog context
     Scrolls.facility = Scrolls::LOG_FACILITY
-    Scrolls.stream.close if Scrolls.stream.respond_to?(:close)
   end
 
   def test_construct
