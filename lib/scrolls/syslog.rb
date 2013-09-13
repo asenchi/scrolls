@@ -27,15 +27,16 @@ module Scrolls
 
   class SyslogLogger
     def initialize(ident = 'scrolls', facility = Syslog::LOG_USER)
-      @syslog = Syslog.open(ident, Syslog::LOG_PID|Syslog::LOG_CONS, facility)
+      options = Syslog::LOG_PID|Syslog::LOG_CONS
+      begin
+        @syslog = Syslog.open(ident, options, facility)
+      rescue RuntimeError
+        @syslog = Syslog.reopen(ident, options, facility)
+      end
     end
 
     def puts(data)
-      @syslog.log(Syslog::LOG_INFO, data)
-    end
-
-    def close
-      @syslog.close
+      @syslog.log(Syslog::LOG_INFO, data, nil)
     end
   end
 end
