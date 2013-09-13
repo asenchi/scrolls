@@ -145,4 +145,28 @@ module Scrolls
   def time_unit
     Log.time_unit
   end
+
+  # Public: Set whether to include a timestamp (now=<ISO8601>) field in the log
+  # output (default: false)
+  #
+  # Examples
+  #
+  #   Scrolls.add_timestamp = true
+  #
+  def add_timestamp=(boolean)
+    Log.add_timestamp = boolean
+  end
+
+  # Public: Return whether the timestamp field will be included in the log
+  # output.
+  #
+  # Examples
+  #
+  #   Scrolls.add_timestamp
+  #   => true
+  #
+  def add_timestamp
+    Log.add_timestamp
+  end
+
 end

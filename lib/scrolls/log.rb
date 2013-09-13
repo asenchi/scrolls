@@ -1,6 +1,7 @@
 require "scrolls/parser"
 require "scrolls/utils"
 require "scrolls/syslog"
+require "time"
 
 module Scrolls
 
@@ -75,11 +76,24 @@ module Scrolls
       @tunit ||= default_time_unit
     end
 
+    def add_timestamp=(b)
+      @add_timestamp = !!b
+    end
+
+    def add_timestamp
+      @add_timestamp || false
+    end
+
     def log(data, &blk)
       if gc = get_global_context
         ctx = gc.merge(context)
         logdata = ctx.merge(data)
       end
+
+      # By merging the logdata into the timestamp, rather than vice-versa, we
+      # ensure that the timestamp comes first in the Hash, and is placed first
+      # on the output, which helps with readability.
+      logdata = { :now => Time.now }.merge(logdata) if add_timestamp
 
       unless blk
         write(logdata)

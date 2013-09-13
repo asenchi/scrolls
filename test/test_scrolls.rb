@@ -10,6 +10,7 @@ class TestScrolls < Test::Unit::TestCase
     Scrolls.global_context({})
     # Reset our syslog context
     Scrolls.facility = Scrolls::LOG_FACILITY
+    Scrolls.add_timestamp = false
   end
 
   def test_construct
@@ -145,5 +146,12 @@ class TestScrolls < Test::Unit::TestCase
   def test_setting_syslog_facility
     Scrolls.facility = "local7"
     assert_equal Syslog::LOG_LOCAL7, Scrolls.facility
+  end
+
+  def test_add_timestamp
+    Scrolls.add_timestamp = true
+    Scrolls.log(:test => "foo")
+    iso8601_regexp = "(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[0-1]|0[1-9]|[1-2][0-9])T(2[0-3]|[0-1][0-9]):([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?(Z|[+-](?:2[0-3]|[0-1][0-9]):[0-5][0-9])?"
+    assert_match(/^now=#{iso8601_regexp} test=foo$/, @out.string)
   end
 end
