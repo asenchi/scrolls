@@ -36,7 +36,7 @@ module Scrolls
     end
 
     def puts(data)
-      @syslog.log(Syslog::LOG_INFO, data, nil)
+      @syslog.log(Syslog::LOG_INFO, "%s", data)
     end
   end
 end
