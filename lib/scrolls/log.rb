@@ -1,7 +1,6 @@
 require "scrolls/parser"
 require "scrolls/utils"
 require "scrolls/syslog"
-require "time"
 
 module Scrolls
 
