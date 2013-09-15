@@ -1,3 +1,5 @@
+require 'time'
+
 module Scrolls
   module Parser
     extend self
@@ -13,7 +15,7 @@ module Scrolls
         elsif v.nil?
           "#{k}=nil"
         elsif v.is_a?(Time)
-          "#{k}=#{v.strftime("%FT%H:%M:%S%z")}"
+          "#{k}=#{v.iso8601}"
         else
           v = v.to_s
           has_single_quote = v.index("'")
@@ -58,6 +60,11 @@ module Scrolls
             v = false
           elsif v == "true"
             v = true
+          else
+            begin
+              v = Time.iso8601(v)
+            rescue ArgumentError
+            end
           end
 
           vals[match[0]] = v

@@ -47,25 +47,27 @@ class TestScrollsParser < Test::Unit::TestCase
     assert_equal data.inspect, parse(unparse(data)).inspect
   end
 
-  def test_parse_constants
+  def test_unparse_constants
     data = { s1: :symbol, s2: Scrolls }
     assert_equal "s1=symbol s2=Scrolls", unparse(data)
   end
 
-  def test_parse_epoch_time
-    v = 1340118155
-    data = { t: Time.at(v) }
-    assert_equal "t=#{Time.at(v).strftime("%FT%H:%M:%S%z")}", unparse(data)
-  end
-
-  def test_parse_time_object
-    now = Time.now
-    data = { t: now }
-    assert_equal "t=#{now.strftime("%FT%H:%M:%S%z")}", unparse(data)
-  end
-
-  def test_parse_nil
+  def test_unparse_nil
     data = { n: nil }
     assert_equal "n=nil", unparse(data)
   end
+
+  def test_unparse_time
+    time = Time.new(2012, 06, 19, 16, 02, 35, "+01:00")
+    data = { t: time }
+    assert_equal "t=2012-06-19T16:02:35+01:00", unparse(data)
+  end
+
+  def test_parse_time
+    time = Time.new(2012, 06, 19, 16, 02, 35, "+01:00")
+    string = "t=2012-06-19T16:02:35+01:00"
+    data = parse(string)
+    assert_equal time, data[:t]
+  end
+
 end
