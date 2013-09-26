@@ -29,6 +29,14 @@ class TestScrollsParser < Test::Unit::TestCase
     assert_equal 's="hello world"', unparse(data)
     assert_equal data.inspect, parse(unparse(data)).inspect
 
+    data = { s: "hello world".inspect }
+    assert_equal "s='\"hello world\"'", unparse(data)
+    assert_equal data.inspect, parse(unparse(data)).inspect
+
+    data = { s: "hello=world".inspect }
+    assert_equal "s='\"hello=world\"'", unparse(data)
+    assert_equal data.inspect, parse(unparse(data)).inspect
+
     data = { s: "slasher \\" }
     assert_equal 's="slasher \\\\"', unparse(data)
     assert_equal data.inspect, parse(unparse(data)).inspect
