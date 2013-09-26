@@ -148,6 +148,12 @@ class TestScrolls < Test::Unit::TestCase
     assert_equal Syslog::LOG_LOCAL7, Scrolls.facility
   end
 
+  def test_setting_syslog_facility_after_instantiation
+    Scrolls.stream = 'syslog'
+    Scrolls.facility = 'local7'
+    assert_match /facility=184/, Scrolls.stream.inspect
+  end
+
   def test_add_timestamp
     Scrolls.add_timestamp = true
     Scrolls.log(:test => "foo")
