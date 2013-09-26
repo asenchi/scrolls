@@ -48,6 +48,9 @@ module Scrolls
 
     def facility=(f)
       @facility = LOG_FACILITY_MAP[f] if f
+      if Scrolls::SyslogLogger.opened?
+        Scrolls::SyslogLogger.new(progname, facility)
+      end
     end
 
     def facility
@@ -57,7 +60,6 @@ module Scrolls
     def stream=(out=nil)
       @defined = out.nil? ? false : true
       if out == 'syslog'
-        progname = File.basename($0)
         @stream = Scrolls::SyslogLogger.new(progname, facility)
       else
         @stream = sync_stream(out)
@@ -223,6 +225,10 @@ module Scrolls
       else
         true
       end
+    end
+
+    def progname
+      File.basename($0)
     end
 
     def default_log_facility
