@@ -94,7 +94,7 @@ module Scrolls
       # By merging the logdata into the timestamp, rather than vice-versa, we
       # ensure that the timestamp comes first in the Hash, and is placed first
       # on the output, which helps with readability.
-      logdata = { :now => Time.now }.merge(logdata) if add_timestamp
+      logdata = { :now => Time.now.utc }.merge(logdata) if add_timestamp
 
       unless blk
         write(logdata)
