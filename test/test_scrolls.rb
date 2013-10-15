@@ -160,4 +160,9 @@ class TestScrolls < Test::Unit::TestCase
     iso8601_regexp = "(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[0-1]|0[1-9]|[1-2][0-9])T(2[0-3]|[0-1][0-9]):([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?(Z|[+-](?:2[0-3]|[0-1][0-9]):[0-5][0-9])?"
     assert_match(/^now=#{iso8601_regexp} test=foo$/, @out.string)
   end
+
+  def test_logging_strings
+    Scrolls.log("string")
+    assert_equal "log_message=string\n", @out.string
+  end
 end

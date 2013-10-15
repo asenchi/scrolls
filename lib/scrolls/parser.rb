@@ -29,7 +29,13 @@ module Scrolls
               v = '"' + v.gsub('\\', '\\\\\\') + '"'
             end
           elsif v =~ /=/
-            v = '"' + v + '"'
+            if has_single_quote && has_double_quote
+              v = '"' + v.gsub(/\\|"/) { |c| "\\#{c}" } + '"'
+            elsif has_double_quote
+              v = "'" + v.gsub('\\', '\\\\\\') + "'"
+            else
+              v = '"' + v.gsub('\\', '\\\\\\') + '"'
+            end
           end
           "#{k}=#{v}"
         end
