@@ -86,9 +86,16 @@ module Scrolls
     end
 
     def log(data, &blk)
+      # If we get a string lets bring it into our structure.
+      if data.kind_of? String
+        rawhash = { "log_message" => data }
+      else
+        rawhash = data
+      end
+
       if gc = get_global_context
         ctx = gc.merge(context)
-        logdata = ctx.merge(data)
+        logdata = ctx.merge(rawhash)
       end
 
       # By merging the logdata into the timestamp, rather than vice-versa, we
@@ -123,8 +130,15 @@ module Scrolls
     def log_exception(data, e)
       sync_stream(STDERR) unless @defined
 
+      # If we get a string lets bring it into our structure.
+      if data.kind_of? String
+        rawhash = { "log_message" => data }
+      else
+        rawhash = data
+      end
+
       if gc = get_global_context
-        logdata = gc.merge(data)
+        logdata = gc.merge(rawhash)
       end
 
       log(logdata.merge(
