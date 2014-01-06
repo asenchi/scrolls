@@ -20,15 +20,7 @@ module Scrolls
           v = v.to_s
           has_single_quote = v.index("'")
           has_double_quote = v.index('"')
-          if v =~ / /
-            if has_single_quote && has_double_quote
-              v = '"' + v.gsub(/\\|"/) { |c| "\\#{c}" } + '"'
-            elsif has_double_quote
-              v = "'" + v.gsub('\\', '\\\\\\') + "'"
-            else
-              v = '"' + v.gsub('\\', '\\\\\\') + '"'
-            end
-          elsif v =~ /=/
+          if (v =~ / /) || (v =~ /=/)
             if has_single_quote && has_double_quote
               v = '"' + v.gsub(/\\|"/) { |c| "\\#{c}" } + '"'
             elsif has_double_quote
