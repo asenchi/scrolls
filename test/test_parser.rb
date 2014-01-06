@@ -53,6 +53,10 @@ class TestScrollsParser < Test::Unit::TestCase
     assert_equal 's="x:y"', unparse(data)
     assert_equal data.inspect, parse(unparse(data)).inspect
 
+    data = {s: "x,y" }
+    assert_equal 's="x,y"', unparse(data)
+    assert_equal data.inspect, parse(unparse(data)).inspect
+
     # simple value is unquoted
     data = { s: "hi" }
     assert_equal 's=hi', unparse(data)
