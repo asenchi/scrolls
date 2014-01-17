@@ -15,7 +15,7 @@ module Scrolls
         elsif v.nil?
           "#{k}=nil"
         elsif v.is_a?(Time)
-          "#{k}=#{v.iso8601}"
+          "#{k}=\"#{v.iso8601}\""
         else
           v = v.to_s
           has_single_quote = v.index("'")

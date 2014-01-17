@@ -76,7 +76,7 @@ class TestScrollsParser < Test::Unit::TestCase
   def test_unparse_time
     time = Time.new(2012, 06, 19, 16, 02, 35, "+01:00")
     data = { t: time }
-    assert_equal "t=2012-06-19T16:02:35+01:00", unparse(data)
+    assert_equal 't="2012-06-19T16:02:35+01:00"', unparse(data)
   end
 
   def test_parse_time
