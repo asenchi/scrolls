@@ -39,7 +39,7 @@ Scrolls.global_context(:app => "scrolls", :deploy => ENV["DEPLOY"])
 
 Scrolls.log(:at => "test")
 
-Scrolls.context(:at => "block") do
+Scrolls.context(:context => "block") do
   Scrolls.log(:at => "exec")
 end
 
