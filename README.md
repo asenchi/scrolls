@@ -53,10 +53,10 @@ end
 Produces:
 
 ```
-now="2014-01-17T06:39:59Z" app=scrolls deploy=nil at=test
-now="2014-01-17T06:39:59Z" app=scrolls deploy=nil at=exec
-now="2014-01-17T06:39:59Z" app=scrolls deploy=nil at=exception class=RuntimeError message= exception_id=70213731497400
-now="2014-01-17T06:39:59Z" app=scrolls deploy=nil at=exception class= exception_id=70213731497400 site="../testscrolls/test.rb:16:in <main>"
+now="2014-01-17T16:11:39Z" app=scrolls deploy=nil at=test
+now="2014-01-17T16:11:39Z" app=scrolls deploy=nil context=block at=exec
+now="2014-01-17T16:11:39Z" app=scrolls deploy=nil at=exception class=RuntimeError message= exception_id=70312608019740
+now="2014-01-17T16:11:39Z" app=scrolls deploy=nil at=exception class= exception_id=70312608019740 site="./test.rb:16:in <main>"
 ```
 
 ## History
