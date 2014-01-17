@@ -1,10 +1,6 @@
 # Scrolls
 
-Scrolls is a logging library that is focused on outputting logs in a
-key=value structure. It's in use at Heroku where we use the event data
-to drive metrics and monitoring services.
-
-Scrolls is rather opinionated.
+Scrolls is a library for generating logs of the structure `key=value`.
 
 ## Installation
 
@@ -20,115 +16,47 @@ Or install it yourself as:
 
     $ gem install scrolls
 
+## Philosophy
+
+Scrolls follows the belief that logs should be treated as data. One way to think of them is the blood of your infrastructure. Logs are a realtime view of what is happening on your systems.
+
+## Documentation:
+
+I apologize, some of these are a WIP.
+
+* [Sending logs to syslog using Scrolls](https://github.com/asenchi/scrolls/tree/master/docs/syslog.md)
+* Logging contexts
+* Adding timestamps by default
+* Misc Features
+
 ## Usage
 
-At Heroku we are big believers in "logs as data". We log everything so
-that we can act upon that event stream of logs. Internally we use logs
-to produce metrics and monitoring data that we can alert on.
-
-Here's an example of a log you might specify in your application:
-
 ```ruby
-Scrolls.log(fn: "trap", signal: s, at: "exit", status: 0)
-```
+require 'scrolls'
 
-The output of which might be:
+Scrolls.add_timestamp = true
+Scrolls.global_context(:app => "scrolls", :deploy => ENV["DEPLOY"])
 
-    fn=trap signal=TERM at=exit status=0
+Scrolls.log(:at => "test")
 
-This provides a rich set of data that we can parse and act upon.
+Scrolls.context(:at => "block") do
+  Scrolls.log(:at => "exec")
+end
 
-A feature of Scrolls is setting contexts. Scrolls has two types of
-context. One is 'global_context' that prepends every log in your
-application with that data and a local 'context' which can be used,
-for example, to wrap requests with a request id.
-
-In our example above, the log message is rather generic, so in order
-to provide more context we might set a global context that links this
-log data to our application and deployment:
-
-```ruby
-Scrolls.global_context(app: "myapp", deploy: ENV["DEPLOY"])
-```
-
-This would change our log output above to:
-
-    app=myapp deploy=production fn=trap signal=TERM at=exit status=0
-
-You can also dynamically add some data to the global context like this:
-
-```ruby
-Scrolls.add_global_context(hostname: `hostname`)
-```
-
-
-If we were in a file and wanted to wrap a particular point of context
-we might also do something similar to:
-
-```ruby
-Scrolls.context(ns: "server") do
-  Scrolls.log(fn: "trap", signal: s, at: "exit", status: 0)
+begin
+  raise
+rescue Exception => e
+  Scrolls.log_exception(:at => "raise", e)
 end
 ```
 
-This would be the output (taking into consideration our global context
-above):
+Produces:
 
-    app=myapp deploy=production ns=server fn=trap signal=TERM at=exit status=0
-
-This allows us to track this log to `Server#trap` and we received a
-'TERM' signal and exited 0.
-
-As you can see we have some standard nomenclature around logging.
-Here's a cheat sheet for some of the methods we use:
-
-* `app`: Application
-* `lib`: Library
-* `ns`: Namespace (Class, Module or files)
-* `fn`: Function
-* `at`: Execution point
-* `deploy`: Our deployment (typically an environment variable i.e. `DEPLOY=staging`)
-* `elapsed`: Measurements (Time)
-* `count`: Measurements (Counters)
-
-Scrolls makes it easy to measure the run time of a portion of code.
-For example:
-
-```ruby
-    Scrolls.log(fn: "test") do
-      Scrolls.log(status: "exec")
-      # Code here
-    end
 ```
-
-This will output the following log:
-
-    fn=test at=start
-    status=exec
-    fn=test at=finish elapsed=0.300
-
-You can change the time unit that Scrolls uses to "milliseconds" (the
-default is "seconds"):
-
-```ruby
-    Scrolls.time_unit = "ms"
-```
-
-Scrolls has a rich #parse method to handle a number of cases. Here is
-a look at some of the ways Scrolls handles certain values.
-
-Time and nil:
-
-```ruby
-    Scrolls.log(t: Time.at(1340118167), this: nil)
-    t=2012-06-19T11:02:47-0400 this=nil
-```
-
-True/False:
-
-```ruby
-    Scrolls.log(that: false, this: true)
-    that=false this=true
+now="2014-01-17T06:39:59Z" app=scrolls deploy=nil at=test
+now="2014-01-17T06:39:59Z" app=scrolls deploy=nil at=exec
+now="2014-01-17T06:39:59Z" app=scrolls deploy=nil at=exception class=RuntimeError message= exception_id=70213731497400
+now="2014-01-17T06:39:59Z" app=scrolls deploy=nil at=exception class= exception_id=70213731497400 site="../testscrolls/test.rb:16:in <main>"
 ```
 
 ## History
@@ -138,14 +66,14 @@ at Heroku. Starting at version 0.2.0 Scrolls was ripped apart and
 restructured to provide a better foundation for the future. Tests and
 documentation were add at that point as well.
 
-## Thanks
-
-Most of the ideas used in Scrolls are those of other engineers at
-Heroku, I simply ripped them off to create a single library. Huge
-thanks to:
+Thanks to the following people for influencing this library.
 
 * Mark McGranaghan
 * Noah Zoschke
 * Mark Fine
 * Fabio Kung
 * Ryan Smith
+
+## LICENSE
+
+MIT License
