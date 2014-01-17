@@ -1,3 +1,3 @@
 module Scrolls
-  VERSION = "0.3.5.pre"
+  VERSION = "0.3.5"
 end
