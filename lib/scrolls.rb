@@ -187,7 +187,7 @@ module Scrolls
   #   Scrolls.single_line_exceptions
   #   => true
   #
-  def single_line_exceptions
+  def single_line_exceptions?
     Log.single_line_exceptions
   end
 

@@ -89,7 +89,7 @@ module Scrolls
       @single_line_exceptions = !!b
     end
 
-    def single_line_exceptions
+    def single_line_exceptions?
       @single_line_exceptions || false
     end
 
