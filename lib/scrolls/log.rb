@@ -162,10 +162,14 @@ module Scrolls
           e.backtrace.each do |line|
             btlines << line.gsub(/[`'"]/, "")
           end
-          excepdata.merge({:site => "#{btlines.join('\n')}"}) unless btlines.empty?
 
-          log(logdata.merge(excepdata))
+          if btlines.length > 0
+            squish = { :site => btlines.join('\n') }
+            log(logdata.merge(excepdata.merge(squish)))
+          end
         else
+          log(logdata.merge(excepdata))
+
           e.backtrace.each do |line|
             log(logdata.merge(excepdata).merge(
                 :at           => "exception",
