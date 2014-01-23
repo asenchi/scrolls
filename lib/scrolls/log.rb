@@ -157,7 +157,7 @@ module Scrolls
       }
 
       if e.backtrace
-        if single_line_exceptions
+        if single_line_exceptions?
           btlines = []
           e.backtrace.each do |line|
             btlines << line.gsub(/[`'"]/, "")
