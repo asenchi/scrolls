@@ -169,4 +169,26 @@ module Scrolls
     Log.add_timestamp
   end
 
+  # Public: Set whether exceptions should generate a single log
+  # message. (default: false)
+  #
+  # Examples
+  #
+  #   Scrolls.single_line_exceptions = true
+  #
+  def single_line_exceptions=(boolean)
+    Log.single_line_exceptions = boolean
+  end
+
+  # Public: Return whether exceptions generate a single log message.
+  #
+  # Examples
+  #
+  #   Scrolls.single_line_exceptions
+  #   => true
+  #
+  def single_line_exceptions
+    Log.single_line_exceptions
+  end
+
 end
