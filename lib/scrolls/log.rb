@@ -85,6 +85,14 @@ module Scrolls
       @add_timestamp || false
     end
 
+    def single_line_exceptions=(b)
+      @single_line_exceptions = !!b
+    end
+
+    def single_line_exceptions?
+      @single_line_exceptions || false
+    end
+
     def log(data, &blk)
       # If we get a string lets bring it into our structure.
       if data.kind_of? String
@@ -141,20 +149,35 @@ module Scrolls
         logdata = gc.merge(rawhash)
       end
 
-      log(logdata.merge(
-          :at => "exception",
-          :class        => e.class,
-          :message      => e.message,
-          :exception_id => e.object_id.abs
-      ))
+      excepdata = {
+        :at           => "exception",
+        :class        => e.class,
+        :message      => e.message,
+        :exception_id => e.object_id.abs
+      }
+
       if e.backtrace
-        e.backtrace.each do |line|
-          log(logdata.merge(
-              :at => "exception",
-              :class => e.message,
-              :exception_id => e.object_id.abs,
-              :site => line.gsub(/[`'"]/, "")
-          ))
+        if single_line_exceptions
+          btlines = []
+          e.backtrace.each do |line|
+            btlines << line.gsub(/[`'"]/, "")
+          end
+
+          if btlines.length > 0
+            squish = { :site => btlines.join('\n') }
+            log(logdata.merge(excepdata.merge(squish)))
+          end
+        else
+          log(logdata.merge(excepdata))
+
+          e.backtrace.each do |line|
+            log(logdata.merge(excepdata).merge(
+                :at           => "exception",
+                :class        => e.class,
+                :exception_id => e.object_id.abs,
+                :site         => line.gsub(/[`'"]/, "")
+            ))
+          end
         end
       end
     end

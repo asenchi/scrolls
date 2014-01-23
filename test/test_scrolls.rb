@@ -133,6 +133,16 @@ class TestScrolls < Test::Unit::TestCase
       oneline_backtrace
   end
 
+  def test_single_line_exceptions
+    Scrolls.single_line_exceptions = true
+    begin
+      raise Exception
+    rescue Exception => e
+      Scrolls.log_exception({:o => "o"}, e)
+    end
+    assert_equal 1, @out.string.scan(/.*site=.*/).size
+  end
+
   def test_syslog_integration
     Scrolls.stream = 'syslog'
     assert_equal Scrolls::SyslogLogger, Scrolls.stream.class
