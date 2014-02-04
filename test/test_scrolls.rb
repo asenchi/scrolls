@@ -175,4 +175,32 @@ class TestScrolls < Test::Unit::TestCase
     Scrolls.log("string")
     assert_equal "log_message=string\n", @out.string
   end
+
+  def test_default_logging_levels
+    Scrolls.debug(:t => "t")
+    assert_equal "", @out.string
+    Scrolls.info(:t => "t")
+    assert_equal "t=t level=info\n", @out.string
+  end
+
+  def test_level_translation_error
+    Scrolls.error(:t => "t")
+    assert_equal "t=t level=warning\n", @out.string
+  end
+
+  def test_level_translation_fatal
+    Scrolls.fatal(:t => "t")
+    assert_equal "t=t level=error\n", @out.string
+  end
+
+  def test_level_translation_warn
+    Scrolls.warn(:t => "t")
+    assert_equal "t=t level=notice\n", @out.string
+  end
+
+  def test_level_translation_unknown
+    Scrolls.unknown(:t => "t")
+    assert_equal "t=t level=alert\n", @out.string
+  end
+
 end

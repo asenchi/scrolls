@@ -45,9 +45,9 @@ module Scrolls
   #   => nil
   #
   #   Scrolls.log(test: "test") { puts "inner block" }
-  #   at=start
+  #   test=test at=start
   #   inner block
-  #   at=finish elapsed=0.000
+  #   test=test at=finish elapsed=0.000
   #   => nil
   #
   def log(data, &blk)
@@ -189,6 +189,112 @@ module Scrolls
   #
   def single_line_exceptions?
     Log.single_line_exceptions
+  end
+
+  # Public: Convience method for Logger replacement
+  #
+  # data - A hash of key/values to log
+  # blk  - A block to be wrapped by log lines
+  #
+  # Examples:
+  #
+  #   Scrolls.debug(test: "test")
+  #   test=test level=debug
+  #   => nil
+  #
+  def debug(data, &blk)
+    data = data.merge(:level => "debug")
+    Log.log(data, &blk)
+  end
+
+  # Public: Convience method for Logger replacement
+  #
+  # Translates the `level` to Syslog equivalent
+  #
+  # data - A hash of key/values to log
+  # blk  - A block to be wrapped by log lines
+  #
+  # Examples:
+  #
+  #   Scrolls.error(test: "test")
+  #   test=test level=warning
+  #   => nil
+  #
+  def error(data, &blk)
+    data = data.merge(:level => "warning")
+    Log.log(data, &blk)
+  end
+
+  # Public: Convience method for Logger replacement
+  #
+  # Translates the `level` to Syslog equivalent
+  #
+  # data - A hash of key/values to log
+  # blk  - A block to be wrapped by log lines
+  #
+  # Examples:
+  #
+  #   Scrolls.fatal(test: "test")
+  #   test=test level=error
+  #   => nil
+  #
+  def fatal(data, &blk)
+    data = data.merge(:level => "error")
+    Log.log(data, &blk)
+  end
+
+  # Public: Convience method for Logger replacement
+  #
+  # Translates the `level` to Syslog equivalent
+  #
+  # data - A hash of key/values to log
+  # blk  - A block to be wrapped by log lines
+  #
+  # Examples:
+  #
+  #   Scrolls.info(test: "test")
+  #   test=test level=info
+  #   => nil
+  #
+  def info(data, &blk)
+    data = data.merge(:level => "info")
+    Log.log(data, &blk)
+  end
+
+  # Public: Convience method for Logger replacement
+  #
+  # Translates the `level` to Syslog equivalent
+  #
+  # data - A hash of key/values to log
+  # blk  - A block to be wrapped by log lines
+  #
+  # Examples:
+  #
+  #   Scrolls.warn(test: "test")
+  #   test=test level=notice
+  #   => nil
+  #
+  def warn(data, &blk)
+    data = data.merge(:level => "notice")
+    Log.log(data, &blk)
+  end
+
+  # Public: Convience method for Logger replacement
+  #
+  # Translates the `level` to Syslog equivalent
+  #
+  # data - A hash of key/values to log
+  # blk  - A block to be wrapped by log lines
+  #
+  # Examples:
+  #
+  #   Scrolls.unknown(test: "test")
+  #   test=test level=alert
+  #   => nil
+  #
+  def unknown(data, &blk)
+    data = data.merge(:level => "alert")
+    Log.log(data, &blk)
   end
 
 end
