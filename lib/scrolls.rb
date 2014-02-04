@@ -209,21 +209,25 @@ module Scrolls
 
   # Public: Convience method for Logger replacement
   #
+  # Translates the `level` to Syslog equivalent
+  #
   # data - A hash of key/values to log
   # blk  - A block to be wrapped by log lines
   #
   # Examples:
   #
   #   Scrolls.error(test: "test")
-  #   test=test level=error
+  #   test=test level=warning
   #   => nil
   #
   def error(data, &blk)
-    data = data.merge(:level => "error")
+    data = data.merge(:level => "warning")
     Log.log(data, &blk)
   end
 
   # Public: Convience method for Logger replacement
+  #
+  # Translates the `level` to Syslog equivalent
   #
   # data - A hash of key/values to log
   # blk  - A block to be wrapped by log lines
@@ -231,15 +235,17 @@ module Scrolls
   # Examples:
   #
   #   Scrolls.fatal(test: "test")
-  #   test=test level=fatal
+  #   test=test level=error
   #   => nil
   #
   def fatal(data, &blk)
-    data = data.merge(:level => "fatal")
+    data = data.merge(:level => "error")
     Log.log(data, &blk)
   end
 
   # Public: Convience method for Logger replacement
+  #
+  # Translates the `level` to Syslog equivalent
   #
   # data - A hash of key/values to log
   # blk  - A block to be wrapped by log lines
@@ -257,17 +263,37 @@ module Scrolls
 
   # Public: Convience method for Logger replacement
   #
+  # Translates the `level` to Syslog equivalent
+  #
   # data - A hash of key/values to log
   # blk  - A block to be wrapped by log lines
   #
   # Examples:
   #
   #   Scrolls.warn(test: "test")
-  #   test=test level=warn
+  #   test=test level=notice
   #   => nil
   #
   def warn(data, &blk)
-    data = data.merge(:level => "warn")
+    data = data.merge(:level => "notice")
+    Log.log(data, &blk)
+  end
+
+  # Public: Convience method for Logger replacement
+  #
+  # Translates the `level` to Syslog equivalent
+  #
+  # data - A hash of key/values to log
+  # blk  - A block to be wrapped by log lines
+  #
+  # Examples:
+  #
+  #   Scrolls.unknown(test: "test")
+  #   test=test level=alert
+  #   => nil
+  #
+  def unknown(data, &blk)
+    data = data.merge(:level => "alert")
     Log.log(data, &blk)
   end
 
