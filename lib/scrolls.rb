@@ -45,9 +45,9 @@ module Scrolls
   #   => nil
   #
   #   Scrolls.log(test: "test") { puts "inner block" }
-  #   at=start
+  #   test=test at=start
   #   inner block
-  #   at=finish elapsed=0.000
+  #   test=test at=finish elapsed=0.000
   #   => nil
   #
   def log(data, &blk)
