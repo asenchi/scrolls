@@ -191,4 +191,84 @@ module Scrolls
     Log.single_line_exceptions
   end
 
+  # Public: Convience method for Logger replacement
+  #
+  # data - A hash of key/values to log
+  # blk  - A block to be wrapped by log lines
+  #
+  # Examples:
+  #
+  #   Scrolls.debug(test: "test")
+  #   test=test level=debug
+  #   => nil
+  #
+  def debug(data, &blk)
+    data = data.merge(:level => "debug")
+    Log.log(data, &blk)
+  end
+
+  # Public: Convience method for Logger replacement
+  #
+  # data - A hash of key/values to log
+  # blk  - A block to be wrapped by log lines
+  #
+  # Examples:
+  #
+  #   Scrolls.error(test: "test")
+  #   test=test level=error
+  #   => nil
+  #
+  def error(data, &blk)
+    data = data.merge(:level => "error")
+    Log.log(data, &blk)
+  end
+
+  # Public: Convience method for Logger replacement
+  #
+  # data - A hash of key/values to log
+  # blk  - A block to be wrapped by log lines
+  #
+  # Examples:
+  #
+  #   Scrolls.fatal(test: "test")
+  #   test=test level=fatal
+  #   => nil
+  #
+  def fatal(data, &blk)
+    data = data.merge(:level => "fatal")
+    Log.log(data, &blk)
+  end
+
+  # Public: Convience method for Logger replacement
+  #
+  # data - A hash of key/values to log
+  # blk  - A block to be wrapped by log lines
+  #
+  # Examples:
+  #
+  #   Scrolls.info(test: "test")
+  #   test=test level=info
+  #   => nil
+  #
+  def info(data, &blk)
+    data = data.merge(:level => "info")
+    Log.log(data, &blk)
+  end
+
+  # Public: Convience method for Logger replacement
+  #
+  # data - A hash of key/values to log
+  # blk  - A block to be wrapped by log lines
+  #
+  # Examples:
+  #
+  #   Scrolls.warn(test: "test")
+  #   test=test level=warn
+  #   => nil
+  #
+  def warn(data, &blk)
+    data = data.merge(:level => "warn")
+    Log.log(data, &blk)
+  end
+
 end

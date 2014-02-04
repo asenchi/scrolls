@@ -175,4 +175,11 @@ class TestScrolls < Test::Unit::TestCase
     Scrolls.log("string")
     assert_equal "log_message=string\n", @out.string
   end
+
+  def test_default_logging_levels
+    Scrolls.debug(:t => "t")
+    assert_equal "", @out.string
+    Scrolls.info(:t => "t")
+    assert_equal "t=t level=info\n", @out.string
+  end
 end
