@@ -12,7 +12,7 @@ module Scrolls
     extend Parser
     extend Utils
 
-    LOG_LEVEL = (ENV['LOG_LEVEL'] || 3).to_i
+    LOG_LEVEL = (ENV['LOG_LEVEL'] || 6).to_i
     LOG_LEVEL_MAP = {
       "emergency" => 0,
       "alert"     => 1,
