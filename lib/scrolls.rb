@@ -26,6 +26,8 @@ module Scrolls
   # for more details.
   #
   def global_context(data=nil)
+    $stderr.puts "global_context() will be deprecated after v0.3.8, please see https://github.com/asenchi/scrolls for more information."
+    warn({:message => "global_context() will be deprecated after v0.3.8, please see https://github.com/asenchi/scrolls for more information."})
     if data
       Log.global_context = data
     else
@@ -42,8 +44,8 @@ module Scrolls
   # for more details.
   #
   def add_global_context(data)
-    $stderr.puts "add_global_context will be deprecated in two releases, please see https://github.com/asenchi/scrolls for more information."
-    warn({:message => "add_global_context will be deprecated in two releases, please see https://github.com/asenchi/scrolls for more information."})
+    $stderr.puts "add_global_context will be deprecated after v0.3.8, please see https://github.com/asenchi/scrolls for more information."
+    warn({:message => "add_global_context will be deprecated after v0.3.8, please see https://github.com/asenchi/scrolls for more information."})
     Log.add_global_context(data)
   end
 

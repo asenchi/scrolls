@@ -41,7 +41,6 @@ module Scrolls
     end
 
     def add_global_context(new_data)
-      $stderr.puts "add_global_context will be deprecated in two releases, please see the documentation for the changes."
       default_global_context unless @global_context
       @global_context.update { |previous_data| previous_data.merge(new_data) }
     end
