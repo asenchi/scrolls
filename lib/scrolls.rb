@@ -17,9 +17,13 @@ module Scrolls
     Log.with_context(data, &blk)
   end
 
-  # Public: Get or set a global context that prefixs all logs
+  # Deprecated: Get or set a global context that prefixs all logs
   #
   # data - A hash of key/values to prepend to each log
+  #
+  # This method will be deprecated two releases after 0.3.8.
+  # See https://github.com/asenchi/scrolls/releases/tag/v0.3.8
+  # for more details.
   #
   def global_context(data=nil)
     if data
@@ -29,7 +33,17 @@ module Scrolls
     end
   end
 
+  # Deprecated: Get or set a global context that prefixs all logs
+  #
+  # data - A hash of key/values to prepend to each log
+  #
+  # This method will be deprecated two releases after 0.3.8.
+  # See https://github.com/asenchi/scrolls/releases/tag/v0.3.8
+  # for more details.
+  #
   def add_global_context(data)
+    $stderr.puts "add_global_context will be deprecated in two releases, please see https://github.com/asenchi/scrolls for more information."
+    warn({:message => "add_global_context will be deprecated in two releases, please see https://github.com/asenchi/scrolls for more information."})
     Log.add_global_context(data)
   end
 
