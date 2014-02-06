@@ -1,16 +1,14 @@
-require_relative "test_helper"
+require File.expand_path("../test_helper", __FILE__)
 
 class TestScrolls < Test::Unit::TestCase
   def setup
     @out = StringIO.new
-    Scrolls.stream = @out
+    Scrolls.init(
+      :stream => @out
+    )
   end
 
   def teardown
-    Scrolls.global_context({})
-    # Reset our syslog context
-    Scrolls.facility = Scrolls::LOG_FACILITY
-    Scrolls.add_timestamp = false
   end
 
   def test_construct
@@ -18,25 +16,22 @@ class TestScrolls < Test::Unit::TestCase
   end
 
   def test_default_global_context
+    Scrolls.init(:stream => @out)
     assert_equal Hash.new, Scrolls.global_context
   end
 
   def test_setting_global_context
-    Scrolls.global_context(:g => "g")
+    Scrolls.init(
+      :stream => @out,
+      :global_context => {:g => "g"},
+    )
     Scrolls.log(:d => "d")
     assert_equal "g=g d=d\n", @out.string
   end
-  
-  def test_adding_to_global_context
-    Scrolls.global_context(:g => "g")
-    Scrolls.add_global_context(:h => "h")
-    Scrolls.log(:d => "d")
-    assert_equal "g=g h=h d=d\n", @out.string
-  end
 
   def test_default_context
-    Scrolls.log(:data => "d")
-    assert_equal Hash.new, Scrolls::Log.context
+    Scrolls.log(:d => "d")
+    assert_equal Hash.new, Scrolls.internal.context
   end
 
   def test_setting_context
@@ -46,7 +41,10 @@ class TestScrolls < Test::Unit::TestCase
   end
 
   def test_all_the_contexts
-    Scrolls.global_context(:g => "g")
+    Scrolls.init(
+      :stream => @out,
+      :global_context => {:g => "g"},
+    )
     Scrolls.log(:o => "o") do
       Scrolls.context(:c => "c") do
         Scrolls.log(:ic => "i")
@@ -106,6 +104,7 @@ class TestScrolls < Test::Unit::TestCase
   def test_setting_incorrect_time_unit
     assert_raise Scrolls::TimeUnitError do
       Scrolls.time_unit = "years"
+      Scrolls.log(:tu => "yrs")
     end
   end
 
@@ -127,25 +126,25 @@ class TestScrolls < Test::Unit::TestCase
       Scrolls.log_exception({:test => "exception"}, e)
     end
 
-    oneline_backtrace = @out.string.gsub("\n", 'XX')
-
-    assert_match /test=exception at=exception.*test_log_exception.*XX.*minitest/,
-      oneline_backtrace
+    assert_equal 1, @out.string.scan(/.*site=.*/).size
   end
 
-  def test_single_line_exceptions
-    Scrolls.single_line_exceptions = true
+  def test_multi_line_exceptions
+    Scrolls.single_line_exceptions = "multi"
     begin
       raise Exception
     rescue Exception => e
       Scrolls.log_exception({:o => "o"}, e)
     end
-    assert_equal 1, @out.string.scan(/.*site=.*/).size
+
+    oneline_backtrace = @out.string.gsub("\n", 'XX')
+    assert_match /o=o at=exception.*test_multi_line_exceptions.*XX.*minitest/,
+      oneline_backtrace
   end
 
   def test_syslog_integration
     Scrolls.stream = 'syslog'
-    assert_equal Scrolls::SyslogLogger, Scrolls.stream.class
+    assert_equal Scrolls::SyslogLogger, Scrolls.internal.logger.class
   end
 
   def test_syslog_facility
@@ -161,7 +160,7 @@ class TestScrolls < Test::Unit::TestCase
   def test_setting_syslog_facility_after_instantiation
     Scrolls.stream = 'syslog'
     Scrolls.facility = 'local7'
-    assert_match /facility=184/, Scrolls.stream.inspect
+    assert_match /facility=184/, Scrolls.internal.logger.inspect
   end
 
   def test_add_timestamp

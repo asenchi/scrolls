@@ -1,10 +1,13 @@
 require "thread"
-require "scrolls/atomic"
-require "scrolls/log"
+require "scrolls/logger"
 require "scrolls/version"
 
 module Scrolls
   extend self
+
+  def init(options)
+    @log = Log.new(options)
+  end
 
   # Public: Set a context in a block for logs
   #
@@ -14,23 +17,13 @@ module Scrolls
   # Examples:
   #
   def context(data, &blk)
-    Log.with_context(data, &blk)
+    @log.with_context(data, &blk)
   end
 
-  # Public: Get or set a global context that prefixs all logs
+  # Public: Get the global context that prefixs all logs
   #
-  # data - A hash of key/values to prepend to each log
-  #
-  def global_context(data=nil)
-    if data
-      Log.global_context = data
-    else
-      Log.global_context
-    end
-  end
-
-  def add_global_context(data)
-    Log.add_global_context(data)
+  def global_context
+    @log.global_context
   end
 
   # Public: Log data and/or wrap a block with start/finish
@@ -51,7 +44,7 @@ module Scrolls
   #   => nil
   #
   def log(data, &blk)
-    Log.log(data, &blk)
+    @log.log(data, &blk)
   end
 
   # Public: Log an exception
@@ -70,7 +63,7 @@ module Scrolls
   #   ...
   #
   def log_exception(data, e)
-    Log.log_exception(data, e)
+    @log.log_exception(data, e)
   end
 
   # Public: Setup a logging facility (default: Syslog::LOG_USER)
@@ -82,7 +75,7 @@ module Scrolls
   #   Scrolls.facility = Syslog::LOG_LOCAL7
   #
   def facility=(f)
-    Log.facility=(f)
+    @log.facility=(f)
   end
 
   # Public: Return the Syslog facility
@@ -93,7 +86,7 @@ module Scrolls
   #   => 8
   #
   def facility
-    Log.facility
+    @log.facility
   end
 
   # Public: Setup a new output (default: STDOUT)
@@ -109,7 +102,7 @@ module Scrolls
   #   Scrolls.stream = StringIO.new
   #
   def stream=(out)
-    Log.stream=(out)
+    @log.stream=(out)
   end
 
   # Public: Return the stream
@@ -120,7 +113,7 @@ module Scrolls
   #   => #<IO:<STDOUT>>
   #
   def stream
-    Log.stream
+    @log.stream
   end
 
   # Public: Set the time unit we use for 'elapsed' (default: "seconds")
@@ -132,7 +125,7 @@ module Scrolls
   #   Scrolls.time_unit = "milliseconds"
   #
   def time_unit=(unit)
-    Log.time_unit=(unit)
+    @log.time_unit = unit
   end
 
   # Public: Return the time unit currently configured
@@ -143,7 +136,7 @@ module Scrolls
   #   => "seconds"
   #
   def time_unit
-    Log.time_unit
+    @log.time_unit
   end
 
   # Public: Set whether to include a timestamp (now=<ISO8601>) field in the log
@@ -154,7 +147,7 @@ module Scrolls
   #   Scrolls.add_timestamp = true
   #
   def add_timestamp=(boolean)
-    Log.add_timestamp = boolean
+    @log.timestamp = boolean
   end
 
   # Public: Return whether the timestamp field will be included in the log
@@ -166,7 +159,7 @@ module Scrolls
   #   => true
   #
   def add_timestamp
-    Log.add_timestamp
+    @log.add_timestamp
   end
 
   # Public: Set whether exceptions should generate a single log
@@ -177,7 +170,7 @@ module Scrolls
   #   Scrolls.single_line_exceptions = true
   #
   def single_line_exceptions=(boolean)
-    Log.single_line_exceptions = boolean
+    @log.exceptions = boolean
   end
 
   # Public: Return whether exceptions generate a single log message.
@@ -188,7 +181,7 @@ module Scrolls
   #   => true
   #
   def single_line_exceptions?
-    Log.single_line_exceptions
+    @log.single_line_exceptions?
   end
 
   # Public: Convience method for Logger replacement
@@ -204,7 +197,7 @@ module Scrolls
   #
   def debug(data, &blk)
     data = data.merge(:level => "debug")
-    Log.log(data, &blk)
+    @log.log(data, &blk)
   end
 
   # Public: Convience method for Logger replacement
@@ -222,7 +215,7 @@ module Scrolls
   #
   def error(data, &blk)
     data = data.merge(:level => "warning")
-    Log.log(data, &blk)
+    @log.log(data, &blk)
   end
 
   # Public: Convience method for Logger replacement
@@ -240,7 +233,7 @@ module Scrolls
   #
   def fatal(data, &blk)
     data = data.merge(:level => "error")
-    Log.log(data, &blk)
+    @log.log(data, &blk)
   end
 
   # Public: Convience method for Logger replacement
@@ -258,7 +251,7 @@ module Scrolls
   #
   def info(data, &blk)
     data = data.merge(:level => "info")
-    Log.log(data, &blk)
+    @log.log(data, &blk)
   end
 
   # Public: Convience method for Logger replacement
@@ -276,7 +269,7 @@ module Scrolls
   #
   def warn(data, &blk)
     data = data.merge(:level => "notice")
-    Log.log(data, &blk)
+    @log.log(data, &blk)
   end
 
   # Public: Convience method for Logger replacement
@@ -294,7 +287,13 @@ module Scrolls
   #
   def unknown(data, &blk)
     data = data.merge(:level => "alert")
-    Log.log(data, &blk)
+    @log.log(data, &blk)
+  end
+
+  # Internal: The Logger initialized by #init
+  #
+  def internal
+    @log
   end
 
 end
