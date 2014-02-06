@@ -1,5 +1,4 @@
 require "thread"
-require "scrolls/atomic"
 require "scrolls/logger"
 require "scrolls/version"
 
