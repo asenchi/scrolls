@@ -24,14 +24,15 @@ Scrolls.init(
 Scrolls.log(:at => test)
 ```
 
-`Scrolls#init` is a new method for initializing the internal Logger in Scrolls and will allow other configuration details to be set. Once the work is finalized more documentation on this method will be available and linked here. Until then you can follow along with development [here](https://github.com/asenchi/scrolls/pulls/54). However, `0.3.8` introduced a `#init` that allows developers to start moving toward that pattern.
+`Scrolls#init` is a new method for initializing the internal Logger in Scrolls and will allow other configuration details to be set. Once the work is finalized more documentation on this method will be available and linked here. Until then you can follow along with development [here](https://github.com/asenchi/scrolls/pulls/54). It was introduced in `0.3.8` to allow developers to start moving toward that pattern.
 
-Here is an example:
+Here is a another example:
 
 ```ruby
 Scrolls.init(
   :global_context => {:g => "g"},
   :timestamp      => true,
+  :exceptions     => "single",
 )
 
 Scrolls.log(:t => "t")
@@ -42,6 +43,7 @@ Is the same as this currently:
 ```ruby
 Scrolls.global_context(:g => "g")
 Scrolls.add_timestamp = true
+Scrolls.single_line_exceptions = true
 
 Scrolls.log(:t => "t")
 ```
