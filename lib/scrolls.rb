@@ -6,6 +6,37 @@ require "scrolls/version"
 module Scrolls
   extend self
 
+  # Public: Initialize a Scrolls logger
+  #
+  # Convienence method to prepare for future releases. Currently mimics
+  # behavior found in other methods. This prepares the developer for a future
+  # backward incompatible change, see:
+  # https://github.com/asenchi/scrolls/pull/54
+  #
+  # options - A hash of key/values for configuring Scrolls
+  #
+  def init(options)
+    stream     = options.fetch(:stream, STDOUT)
+    facility   = options.fetch(:facility, Syslog::LOG_USER)
+    time_unit  = options.fetch(:time_unit, "seconds")
+    timestamp  = options.fetch(:timestamp, false)
+    exceptions = options.fetch(:exceptions, "multi")
+    global_ctx = options.fetch(:global_context, {})
+
+    Log.stream    = stream
+    Log.facility  = facility if facility
+    Log.time_unit = time_unit unless time_unit == "seconds"
+    Log.add_timestamp = timestamp unless timestamp == false
+
+    if exceptions == "single"
+      Log.single_line_exceptions = true
+    end
+
+    unless global_ctx == {}
+      Log.global_context = global_ctx
+    end
+  end
+
   # Public: Set a context in a block for logs
   #
   # data - A hash of key/values to prepend to each log in a block

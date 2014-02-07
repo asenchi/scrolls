@@ -24,8 +24,28 @@ Scrolls.init(
 Scrolls.log(:at => test)
 ```
 
-`Scrolls#init` is a new method for initializing the internal Logger in Scrolls and will allow other configuration details to be set. Once the work is finalized more documentation on this method will be available and linked here. Until then you can follow along with development [here](https://github.com/asenchi/scrolls/pulls/54).
+`Scrolls#init` is a new method for initializing the internal Logger in Scrolls and will allow other configuration details to be set. Once the work is finalized more documentation on this method will be available and linked here. Until then you can follow along with development [here](https://github.com/asenchi/scrolls/pulls/54). However, `0.3.8` introduced a `#init` that allows developers to start moving toward that pattern.
 
-This also means that the "global_context" is no longer mutable and `Scrolls#add_global_context` will be deprecated.
+Here is an example:
+
+```ruby
+Scrolls.init(
+  :global_context => {:g => "g"},
+  :timestamp      => true,
+)
+
+Scrolls.log(:t => "t")
+```
+
+Is the same as this currently:
+
+```ruby
+Scrolls.global_context(:g => "g")
+Scrolls.add_timestamp = true
+
+Scrolls.log(:t => "t")
+```
+
+All of this also means that the "global_context" is no longer mutable and `Scrolls#add_global_context` will be deprecated.
 
 I apologize for the incompatability of these changes, I work very hard not to break existing behavior. However, with the changes in Ruby core, I think we have a better path forward. I'm looking forward to "cementing" the API and releasing a 1.0 soon after this major refactor.
