@@ -56,7 +56,7 @@ class TestScrolls < Test::Unit::TestCase
       Scrolls.log(:i => "i")
     end
     global = @out.string.gsub("\n", 'XX')
-    assert_match /.*level=notice.*at=start.*i=i/, global
+    assert_match /g=g.*at=start.*i=i/, global
   end
 
   def test_deeply_nested_context
