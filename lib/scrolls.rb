@@ -6,6 +6,37 @@ require "scrolls/version"
 module Scrolls
   extend self
 
+  # Public: Initialize a Scrolls logger
+  #
+  # Convienence method to prepare for future releases. Currently mimics
+  # behavior found in other methods. This prepares the developer for a future
+  # backward incompatible change, see:
+  # https://github.com/asenchi/scrolls/pull/54
+  #
+  # options - A hash of key/values for configuring Scrolls
+  #
+  def init(options)
+    stream     = options.fetch(:stream, STDOUT)
+    facility   = options.fetch(:facility, Syslog::LOG_USER)
+    time_unit  = options.fetch(:time_unit, "seconds")
+    timestamp  = options.fetch(:timestamp, false)
+    exceptions = options.fetch(:exceptions, "multi")
+    global_ctx = options.fetch(:global_context, {})
+
+    Log.stream    = stream
+    Log.facility  = facility if facility
+    Log.time_unit = time_unit unless time_unit == "seconds"
+    Log.add_timestamp = timestamp unless timestamp == false
+
+    if exceptions == "single"
+      Log.single_line_exceptions = true
+    end
+
+    unless global_ctx == {}
+      Log.global_context = global_ctx
+    end
+  end
+
   # Public: Set a context in a block for logs
   #
   # data - A hash of key/values to prepend to each log in a block
@@ -17,11 +48,16 @@ module Scrolls
     Log.with_context(data, &blk)
   end
 
-  # Public: Get or set a global context that prefixs all logs
+  # Deprecated: Get or set a global context that prefixs all logs
   #
   # data - A hash of key/values to prepend to each log
   #
+  # This method will be deprecated two releases after 0.3.8.
+  # See https://github.com/asenchi/scrolls/releases/tag/v0.3.8
+  # for more details.
+  #
   def global_context(data=nil)
+    $stderr.puts "global_context() will be deprecated after v0.3.8, please see https://github.com/asenchi/scrolls for more information."
     if data
       Log.global_context = data
     else
@@ -29,7 +65,16 @@ module Scrolls
     end
   end
 
+  # Deprecated: Get or set a global context that prefixs all logs
+  #
+  # data - A hash of key/values to prepend to each log
+  #
+  # This method will be deprecated two releases after 0.3.8.
+  # See https://github.com/asenchi/scrolls/releases/tag/v0.3.8
+  # for more details.
+  #
   def add_global_context(data)
+    $stderr.puts "add_global_context will be deprecated after v0.3.8, please see https://github.com/asenchi/scrolls for more information."
     Log.add_global_context(data)
   end
 

@@ -20,6 +20,10 @@ Or install it yourself as:
 
 Scrolls follows the belief that logs should be treated as data. One way to think of them is the blood of your infrastructure. Logs are a realtime view of what is happening on your systems.
 
+## Need to know!
+
+The way Scrolls handles "global_context" is changing after v0.3.8. Please see the [release notes](https://github.com/asenchi/scrolls/releases/tag/v0.3.8) and [this documentation](https://github.com/asenchi/scrolls/tree/master/docs/global-context.md) for more information. I apologize for any trouble this may cause.
+
 ## Documentation:
 
 I apologize, some of these are a WIP.

@@ -24,14 +24,16 @@ class TestScrolls < Test::Unit::TestCase
   def test_setting_global_context
     Scrolls.global_context(:g => "g")
     Scrolls.log(:d => "d")
-    assert_equal "g=g d=d\n", @out.string
+    global = @out.string.gsub("\n", 'XX')
+    assert_match /g=g.*d=d/, global
   end
   
   def test_adding_to_global_context
     Scrolls.global_context(:g => "g")
     Scrolls.add_global_context(:h => "h")
     Scrolls.log(:d => "d")
-    assert_equal "g=g h=h d=d\n", @out.string
+    global = @out.string.gsub("\n", 'XX')
+    assert_match /g=g.*h=h.*d=d/, global
   end
 
   def test_default_context
@@ -53,9 +55,8 @@ class TestScrolls < Test::Unit::TestCase
       end
       Scrolls.log(:i => "i")
     end
-    @out.truncate(37)
-    output = "g=g o=o at=start\ng=g c=c ic=i\ng=g i=i"
-    assert_equal output, @out.string
+    global = @out.string.gsub("\n", 'XX')
+    assert_match /g=g.*at=start.*i=i/, global
   end
 
   def test_deeply_nested_context
