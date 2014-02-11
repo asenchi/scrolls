@@ -248,7 +248,7 @@ module Scrolls
   #   => nil
   #
   def debug(data, &blk)
-    data = data.merge(:level => "debug")
+    data = data.merge(:level => "debug") if data.is_a?(Hash)
     Log.log(data, &blk)
   end
 
@@ -266,7 +266,7 @@ module Scrolls
   #   => nil
   #
   def error(data, &blk)
-    data = data.merge(:level => "warning")
+    data = data.merge(:level => "warning") if data.is_a?(Hash)
     Log.log(data, &blk)
   end
 
@@ -284,7 +284,7 @@ module Scrolls
   #   => nil
   #
   def fatal(data, &blk)
-    data = data.merge(:level => "error")
+    data = data.merge(:level => "error") if data.is_a?(Hash)
     Log.log(data, &blk)
   end
 
@@ -302,7 +302,7 @@ module Scrolls
   #   => nil
   #
   def info(data, &blk)
-    data = data.merge(:level => "info")
+    data = data.merge(:level => "info") if data.is_a?(Hash)
     Log.log(data, &blk)
   end
 
@@ -320,7 +320,7 @@ module Scrolls
   #   => nil
   #
   def warn(data, &blk)
-    data = data.merge(:level => "notice")
+    data = data.merge(:level => "notice") if data.is_a?(Hash)
     Log.log(data, &blk)
   end
 
@@ -338,7 +338,7 @@ module Scrolls
   #   => nil
   #
   def unknown(data, &blk)
-    data = data.merge(:level => "alert")
+    data = data.merge(:level => "alert") if data.is_a?(Hash)
     Log.log(data, &blk)
   end
 
