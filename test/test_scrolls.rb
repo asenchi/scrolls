@@ -3,7 +3,7 @@ require_relative "test_helper"
 class TestScrolls < Test::Unit::TestCase
   def setup
     @out = StringIO.new
-    Scrolls.stream = @out
+    Scrolls.init(:stream => @out)
   end
 
   def teardown
@@ -202,6 +202,26 @@ class TestScrolls < Test::Unit::TestCase
   def test_level_translation_unknown
     Scrolls.unknown(:t => "t")
     assert_equal "t=t level=alert\n", @out.string
+  end
+
+  def test_sending_string_error
+    Scrolls.error("error")
+    assert_equal "log_message=error\n", @out.string
+  end
+
+  def test_sending_string_fatal
+    Scrolls.fatal("fatal")
+    assert_equal "log_message=fatal\n", @out.string
+  end
+
+  def test_sending_string_warn
+    Scrolls.warn("warn")
+    assert_equal "log_message=warn\n", @out.string
+  end
+
+  def test_sending_string_unknown
+    Scrolls.unknown("unknown")
+    assert_equal "log_message=unknown\n", @out.string
   end
 
 end
