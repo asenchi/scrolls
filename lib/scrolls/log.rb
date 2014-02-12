@@ -60,6 +60,9 @@ module Scrolls
       @defined = out.nil? ? false : true
       if out == 'syslog'
         @stream = Scrolls::SyslogLogger.new(progname, facility)
+      elsif out =~ /^udp/
+        parse_url(out)
+        @stream = Scrolls::UDPLogger.new(@udp_host, @udp_port)
       else
         @stream = sync_stream(out)
       end
@@ -269,6 +272,19 @@ module Scrolls
 
     def default_log_facility
       LOG_FACILITY
+    end
+
+    def parse_url(out)
+      # FIXME
+      if out =~ /^udp:\/\/([^ ]):([^ ])/
+        # We've been given something like: udp://host:port
+        @host = $1
+        @port = $2
+      elsif out =~ /^udp:([^ ]):([^ ])/
+        # We've been given something like: udp:host:port
+        @host = $1
+        @port = $2
+      end
     end
   end
 end
