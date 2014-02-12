@@ -165,6 +165,19 @@ class TestScrolls < Test::Unit::TestCase
     assert_match /facility=184/, Scrolls.stream.inspect
   end
 
+  def test_udp_integration
+    Scrolls.stream = 'udp'
+    assert_equal Scrolls::UDPLogger, Scrolls.stream.class
+  end
+
+  def test_udp_host
+    assert_equal '127.0.0.1', Scrolls::Log.udp_host
+  end
+
+  def test_udp_port
+    assert_equal 514, Scrolls::Log.udp_port
+  end
+
   def test_add_timestamp
     Scrolls.add_timestamp = true
     Scrolls.log(:test => "foo")
