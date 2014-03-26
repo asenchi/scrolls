@@ -14,15 +14,26 @@ module Scrolls
 
     LOG_LEVEL = (ENV['LOG_LEVEL'] || 6).to_i
     LOG_LEVEL_MAP = {
-      "emergency" => 0,
-      "alert"     => 1,
-      "critical"  => 2,
-      "error"     => 3,
-      "warning"   => 4,
-      "notice"    => 5,
-      "info"      => 6,
-      "debug"     => 7
+      "emergency" => 0, # Syslog::LOG_EMERG
+      "alert"     => 1, # Syslog::LOG_ALERT
+      "critical"  => 2, # Syslog::LOG_CRIT
+      "error"     => 3, # Syslog::LOG_ERR
+      "warning"   => 4, # Syslog::LOG_WARNING
+      "notice"    => 5, # Syslog::LOG_NOTICE
+      "info"      => 6, # Syslog::LOG_INFO
+      "debug"     => 7  # Syslog::LOG_DEBUG
     }
+
+    # Map Logger to Syslog log levels. Currently not used other than
+    # by developers to remember the translation.
+    # LOGGER_LEVEL_MAP = {
+    #   0 => 7, # Logger::DEBUG   => Syslog::LOG_DEBUG
+    #   1 => 6, # Logger::INFO    => Syslog::LOG_INFO
+    #   2 => 4, # Logger::WARN    => Syslog::LOG_WARNING
+    #   3 => 3, # Logger::ERROR   => Syslog::LOG_ERR
+    #   4 => 0, # Logger::FATAL   => Syslog::LOG_EMERG
+    #   5 => 5, # Logger::UNKNOWN => Syslog::LOG_NOTICE
+    # }
 
     def context
       Thread.current[:scrolls_context] ||= {}
@@ -56,10 +67,22 @@ module Scrolls
       @facility ||= default_log_facility
     end
 
+    def level=(l)
+      if l
+        @level = l
+      else
+        level
+      end
+    end
+
+    def level
+      @level || LOG_LEVEL
+    end
+
     def stream=(out=nil)
       @defined = out.nil? ? false : true
       if out == 'syslog'
-        @stream = Scrolls::SyslogLogger.new(progname, facility)
+        @stream = Scrolls::SyslogLogger.new(progname, facility, level)
       else
         @stream = sync_stream(out)
       end
@@ -255,9 +278,9 @@ module Scrolls
       end
     end
 
-    def log_level_ok?(level)
-      if level
-        LOG_LEVEL_MAP[level.to_s] <= LOG_LEVEL
+    def log_level_ok?(l)
+      if l
+        LOG_LEVEL_MAP[l.to_s] <= level
       else
         true
       end

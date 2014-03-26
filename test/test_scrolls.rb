@@ -27,7 +27,7 @@ class TestScrolls < Test::Unit::TestCase
     global = @out.string.gsub("\n", 'XX')
     assert_match /g=g.*d=d/, global
   end
-  
+
   def test_adding_to_global_context
     Scrolls.global_context(:g => "g")
     Scrolls.add_global_context(:h => "h")
@@ -175,6 +175,14 @@ class TestScrolls < Test::Unit::TestCase
   def test_logging_strings
     Scrolls.log("string")
     assert_equal "log_message=string\n", @out.string
+  end
+
+  def test_setting_logging_level
+    Scrolls.debug(:t => "t")
+    assert_equal "", @out.string
+    Scrolls.level = Syslog::LOG_DEBUG
+    Scrolls.debug(:t => "t")
+    assert_equal "t=t level=debug\n", @out.string
   end
 
   def test_default_logging_levels
