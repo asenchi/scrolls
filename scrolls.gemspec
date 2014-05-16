@@ -14,4 +14,5 @@ Gem::Specification.new do |gem|
   gem.name          = "scrolls"
   gem.require_paths = ["lib"]
   gem.version       = Scrolls::VERSION
+  gem.add_runtime_dependency 'rainbow', '2.0.0'
 end
