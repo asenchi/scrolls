@@ -247,9 +247,9 @@ module Scrolls
         msg = unparse(data)
         mtx.synchronize do
           begin
-            stream.puts(msg)
+            stream.print(msg + "\n")
           rescue NoMethodError => e
-            raise
+            raise e
           end
         end
       end
