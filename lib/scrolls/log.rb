@@ -257,9 +257,19 @@ module Scrolls
 
     def log_level_ok?(level)
       if level
-        LOG_LEVEL_MAP[level.to_s] <= LOG_LEVEL
+        compare_log_level(level)
       else
         true
+      end
+    end
+
+    def compare_log_level(level)
+      if LOG_LEVEL_MAP[level.to_s]
+        LOG_LEVEL_MAP[level.to_s] <= LOG_LEVEL
+      else
+        raise StandardError.new(
+          "unkown log level, please use: (#{LOG_LEVEL_MAP.keys.join(', ')}"
+        )
       end
     end
 
