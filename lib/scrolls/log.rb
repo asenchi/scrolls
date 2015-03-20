@@ -245,13 +245,7 @@ module Scrolls
     def write(data)
       if log_level_ok?(data[:level])
         msg = unparse(data)
-        mtx.synchronize do
-          begin
-            stream.puts(msg)
-          rescue NoMethodError => e
-            raise
-          end
-        end
+        stream.print(msg + "\n")
       end
     end
 
