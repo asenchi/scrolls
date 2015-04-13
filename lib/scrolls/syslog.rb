@@ -26,17 +26,21 @@ module Scrolls
   }
 
   class SyslogLogger
-    def initialize(ident = 'scrolls', facility = Syslog::LOG_USER)
+    def initialize(ident = 'scrolls', facility = Syslog::LOG_USER, level = Syslog::LOG_INFO)
+      @ident = ident
+      @facility = facility
+      @level = level
+
       options = Syslog::LOG_PID|Syslog::LOG_CONS
       if Syslog.opened?
-        @syslog = Syslog.reopen(ident, options, facility)
+        @syslog = Syslog.reopen(@ident, options, @facility)
       else
-        @syslog = Syslog.open(ident, options, facility)
+        @syslog = Syslog.open(@ident, options, @facility)
       end
     end
 
     def puts(data)
-      @syslog.log(Syslog::LOG_INFO, "%s", data)
+      @syslog.log(@level, "%s", data)
     end
 
     def self.opened?

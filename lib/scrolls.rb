@@ -18,6 +18,7 @@ module Scrolls
   def init(options)
     stream     = options.fetch(:stream, STDOUT)
     facility   = options.fetch(:facility, Syslog::LOG_USER)
+    level      = options.fetch(:level, Scrolls::Log::LOG_LEVEL)
     time_unit  = options.fetch(:time_unit, "seconds")
     timestamp  = options.fetch(:timestamp, false)
     exceptions = options.fetch(:exceptions, "multi")
@@ -25,6 +26,7 @@ module Scrolls
 
     Log.stream    = stream
     Log.facility  = facility if facility
+    Log.level     = level
     Log.time_unit = time_unit unless time_unit == "seconds"
     Log.add_timestamp = timestamp unless timestamp == false
 
@@ -140,6 +142,13 @@ module Scrolls
   def facility
     Log.facility
   end
+
+  # Public: Adjust the log level (default: Syslog::INFO)
+  def level=(l)
+    Log.level=(l)
+  end
+
+  # Public: Get the current log level we are logging at
 
   # Public: Setup a new output (default: STDOUT)
   #
