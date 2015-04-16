@@ -1,6 +1,7 @@
 require "scrolls/parser"
 require "scrolls/utils"
 require "scrolls/syslog"
+require "scrolls/udp"
 
 module Scrolls
 
@@ -60,6 +61,9 @@ module Scrolls
       @defined = out.nil? ? false : true
       if out == 'syslog'
         @stream = Scrolls::SyslogLogger.new(progname, facility)
+      elsif out =~ /^udp/
+        parse_url(out)
+        @stream = Scrolls::UDPLogger.new(udp_host, udp_port)
       else
         @stream = sync_stream(out)
       end
@@ -192,6 +196,14 @@ module Scrolls
       res
     end
 
+    def udp_host
+      @udp_host ||= "127.0.0.1"
+    end
+
+    def udp_port
+      @udp_port ||= 514
+    end
+
     private
 
     def get_global_context
@@ -263,6 +275,19 @@ module Scrolls
 
     def default_log_facility
       LOG_FACILITY
+    end
+
+    def parse_url(out)
+      # FIXME
+      if out =~ /^udp:\/\/([^ ]):([^ ])/
+        # We've been given something like: udp://host:port
+        @udp_host = $1
+        @udp_port = $2.to_i
+      elsif out =~ /^udp:([^ ]):([^ ])/
+        # We've been given something like: udp:host:port
+        @udp_host = $1
+        @udp_port = $2.to_i
+      end
     end
   end
 end
