@@ -1,6 +1,7 @@
 require "scrolls/parser"
 require "scrolls/utils"
 require "scrolls/syslog"
+require "json"
 
 module Scrolls
 
@@ -244,7 +245,7 @@ module Scrolls
 
     def write(data)
       if log_level_ok?(data[:level])
-        msg = unparse(data)
+        msg = parse(data).to_json
         stream.print(msg + "\n")
       end
     end
