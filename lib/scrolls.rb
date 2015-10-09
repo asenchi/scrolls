@@ -2,6 +2,7 @@ require "thread"
 require "scrolls/atomic"
 require "scrolls/log"
 require "scrolls/version"
+require 'oj'
 
 module Scrolls
   extend self
