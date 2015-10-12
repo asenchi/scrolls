@@ -8,12 +8,22 @@ module Scrolls
       result = {}
 
       data.map do |(k,v)|
+        key = k
+
+        if key.is_a?(Symbol)
+          key = key.to_s
+        end
+
         if v.is_a?(Float)
-          result[k] = format("%.3f", v)
+          result[key] = format("%.3f", v)
         elsif v.is_a?(Time)
-          result[k] = v.iso8601
+          result[key] = v.iso8601
+        elsif v.is_a?(String)
+          result[key] = v.dup.force_encoding('UTF-8')
+        elsif v.is_a?(Hash)
+          result[key] = parse(v)
         else
-          result[k] = v
+          result[key] = v
         end
       end
 
