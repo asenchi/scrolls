@@ -14,9 +14,7 @@ module Scrolls
           key = key.to_s
         end
 
-        if v.is_a?(Float)
-          result[key] = format("%.3f", v)
-        elsif v.is_a?(Time)
+        if v.is_a?(Time)
           result[key] = v.iso8601
         elsif v.is_a?(String)
           result[key] = v.dup.force_encoding('UTF-8')
