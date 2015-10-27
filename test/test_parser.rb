@@ -5,7 +5,7 @@ class TestScrollsParser < Test::Unit::TestCase
 
   def test_parse_floats
     data = { elapsed: 12.00000, __time: 0 }
-    assert_equal({ "elapsed" => "12.000", "__time" => 0 }, parse(data))
+    assert_equal({ "elapsed" => 12.0, "__time" => 0 }, parse(data))
   end
 
   def test_parse_time
@@ -16,6 +16,6 @@ class TestScrollsParser < Test::Unit::TestCase
 
   def test_parse_hash
     data = { data: { elapsed: 12.00000, __time: 0 } }
-    assert_equal({ "data" => { "elapsed" => "12.000", "__time" => 0 } }, parse(data))
+    assert_equal({ "data" => { "elapsed" => 12.0, "__time" => 0 } }, parse(data))
   end
 end
