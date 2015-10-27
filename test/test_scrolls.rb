@@ -1,4 +1,5 @@
 require_relative "test_helper"
+require "timecop"
 
 class TestScrolls < Test::Unit::TestCase
   def setup
@@ -116,8 +117,14 @@ class TestScrolls < Test::Unit::TestCase
   end
 
   def test_logging_block
-    Scrolls.log(:outer => "o") { Scrolls.log(:inner => "i") }
-    output = "{\"outer\":\"o\",\"at\":\"start\"}\n{\"inner\":\"i\"}\n{\"outer\":\"o\",\"at\":\"finish\",\"elapsed\":\"0.000\"}\n"
+    Timecop.freeze
+    Scrolls.log(:outer => "o") do
+      Timecop.freeze(Time.now + 3)
+      Scrolls.log(:inner => "i")
+    end
+    Timecop.return
+
+    output = "{\"outer\":\"o\",\"at\":\"start\"}\n{\"inner\":\"i\"}\n{\"outer\":\"o\",\"at\":\"finish\",\"elapsed\":3.0}\n"
     assert_equal output, @out.string
   end
 
