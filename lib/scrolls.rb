@@ -235,6 +235,36 @@ module Scrolls
   def single_line_exceptions?
     Log.single_line_exceptions
   end
+  
+  # Public: Set whether logs should be colorized
+  # (default: false)
+  #
+  # Examples
+  #
+  #   Scrolls.enable_colors = true
+  #
+  def enable_colors=(boolean)
+    Log.enable_colors = boolean
+  end
+
+  def colors_enabled?
+    Log.colors_enabled?
+  end
+
+  # Public: Set colors for colorization of logs
+  # (default: {})
+  #
+  # Examples
+  #
+  #   Scrolls.colors = {:default_key => :yellow, :default_value => :green, :custom_key => :blue, :custom_value => :magenta}
+  #
+  def colors=(hash)
+    Log.colors = hash
+  end
+
+  def colors
+    Log.colors
+  end
 
   # Public: Convience method for Logger replacement
   #

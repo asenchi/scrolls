@@ -223,5 +223,34 @@ class TestScrolls < Test::Unit::TestCase
     Scrolls.unknown("unknown")
     assert_equal "log_message=unknown\n", @out.string
   end
+  
+end
+
+class TestScrollsColorized < Test::Unit::TestCase
+  def setup
+    @out = StringIO.new
+    Scrolls.init(:stream => @out)
+    Scrolls.enable_colors = true
+  end
+  
+  def teardown
+    Scrolls.global_context({})
+    # Reset our syslog context
+    Scrolls.facility = Scrolls::LOG_FACILITY
+    Scrolls.add_timestamp = false
+  end
+  
+  def test_scrolls_has_enabled_colors
+    assert Scrolls.colors_enabled?
+    Scrolls.log("string")
+    assert_equal "\e[31mlog_message\e[0m=\e[34mstring\e[0m\n", @out.string
+  end
+  
+  def test_scrolls_with_custom_colors
+    assert Scrolls.colors_enabled?
+    Scrolls.colors = {:default_key => :yellow, :default_value => :green, :custom_key => :red, :custom_value => :cyan }
+    Scrolls.log(:t => "t")
+    assert_equal "\e[31mt\e[0m=\e[34mt\e[0m\n", @out.string
+  end
 
 end

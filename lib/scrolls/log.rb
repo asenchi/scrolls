@@ -93,6 +93,23 @@ module Scrolls
       @single_line_exceptions || false
     end
 
+    def enable_colors=(boolean)
+      @enable_colors = !!boolean
+    end
+
+    def colors_enabled?
+      @enable_colors || false
+    end
+
+    def colors=(colors)
+      @colors = colors
+    end
+    
+    def colors
+      @colors || {}
+    end
+
+
     def log(data, &blk)
       # If we get a string lets bring it into our structure.
       if data.kind_of? String
@@ -110,6 +127,8 @@ module Scrolls
       # ensure that the timestamp comes first in the Hash, and is placed first
       # on the output, which helps with readability.
       logdata = { :now => Time.now.utc }.merge(logdata) if add_timestamp
+      
+      colorize_output(logdata) if colors_enabled?
 
       unless blk
         write(logdata)
