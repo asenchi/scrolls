@@ -238,13 +238,12 @@ module Scrolls
     def sync_stream(out=nil)
       out = STDOUT if out.nil?
       s = out
-      s.sync = true
       s
     end
 
     def write(data)
       if log_level_ok?(data[:level])
-        msg = unparse(data)
+        msg = Oj.dump(parse(data))
         stream.print(msg + "\n")
       end
     end
