@@ -238,7 +238,6 @@ module Scrolls
     def sync_stream(out=nil)
       out = STDOUT if out.nil?
       s = out
-      s.sync = true
       s
     end
 
