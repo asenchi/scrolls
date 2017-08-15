@@ -1,5 +1,6 @@
 require "scrolls/parser"
 require "scrolls/utils"
+require "scrolls/iolog"
 require "scrolls/syslog"
 
 module Scrolls
@@ -231,21 +232,14 @@ module Scrolls
       ((finish - start).to_f * @t)
     end
 
-    def mtx
-      @mtx ||= Mutex.new
-    end
-
-    def sync_stream(out=nil)
-      out = STDOUT if out.nil?
-      s = out
-      s.sync = true
-      s
+    def sync_stream(out = STDOUT)
+      IOLog.new(out)
     end
 
     def write(data)
       if log_level_ok?(data[:level])
         msg = unparse(data)
-        stream.print(msg + "\n")
+        stream.log(msg)
       end
     end
 
