@@ -14,7 +14,7 @@ class TestScrolls < Test::Unit::TestCase
   end
 
   def test_construct
-    assert_equal StringIO, Scrolls.stream.class
+    assert_equal Scrolls::IOLog, Scrolls.stream.class
   end
 
   def test_default_global_context
@@ -130,7 +130,7 @@ class TestScrolls < Test::Unit::TestCase
 
     oneline_backtrace = @out.string.gsub("\n", 'XX')
 
-    assert_match /test=exception at=exception.*test_log_exception.*XX.*minitest/,
+    assert_match /test=exception at=exception.*test_log_exception.*XX/,
       oneline_backtrace
   end
 
@@ -163,6 +163,12 @@ class TestScrolls < Test::Unit::TestCase
     Scrolls.stream = 'syslog'
     Scrolls.facility = 'local7'
     assert_match /facility=184/, Scrolls.stream.inspect
+  end
+
+  def test_logging_message_with_syslog
+    Scrolls.stream = 'syslog'
+    Scrolls.facility = 'local7'
+    Scrolls.log "scrolls test"
   end
 
   def test_add_timestamp

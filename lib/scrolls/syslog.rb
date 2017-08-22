@@ -35,7 +35,7 @@ module Scrolls
       end
     end
 
-    def puts(data)
+    def log(data)
       @syslog.log(Syslog::LOG_INFO, "%s", data)
     end
 
