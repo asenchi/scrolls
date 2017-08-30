@@ -4,8 +4,10 @@ module Scrolls
   module Parser
     extend self
 
-    def unparse(data)
+    def unparse(data, escape_keys=false)
       data.map do |(k,v)|
+        k = Scrolls::Utils.escape_chars(k) if escape_keys
+
         if (v == true)
           "#{k}=true"
         elsif (v == false)

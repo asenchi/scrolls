@@ -79,6 +79,15 @@ class TestScrollsParser < Minitest::Test
     assert_equal 't="2012-06-19T16:02:35+01:00"', unparse(data)
   end
 
+  def test_unparse_escape_keys
+    html  = "<p>p</p>"
+    slash = "p/p"
+
+    data = { html => "d", slash => "d" }
+    assert_equal '&lt;p&gt;p&lt;&#x2F;p&gt;=d p&#x2F;p=d',
+      unparse(data, escape_keys=true)
+  end
+
   def test_parse_time
     time = Time.new(2012, 06, 19, 16, 02, 35, "+01:00")
     string = "t=2012-06-19T16:02:35+01:00"

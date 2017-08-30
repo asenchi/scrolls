@@ -7,6 +7,14 @@ module Scrolls
   # Public: Initialize a Scrolls logger
   #
   # options - A hash of key/values for configuring Scrolls
+  #   stream         - Stream to output data (default: STDOUT)
+  #   log_facility   - Syslog facility (default: Syslog::LOG_USER)
+  #   time_unit      - Unit of time (default: seconds)
+  #   timestamp      - Prepend logs with a timestamp (default: false)
+  #   exceptions     - Method for outputting exceptions (default: single line)
+  #   global_context - Immutable context to prepend all messages with
+  #   syslog_options - Syslog options (default: Syslog::LOG_PID|Syslog::LOG_CONS)
+  #   escape_keys - Escape chars in keys
   #
   def init(options={})
     # Set a hint whether #init was called.

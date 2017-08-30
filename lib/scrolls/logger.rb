@@ -3,51 +3,14 @@ require "syslog"
 require "scrolls/parser"
 require "scrolls/iologger"
 require "scrolls/sysloglogger"
+require "scrolls/utils"
 
 module Scrolls
   # Default log facility
   LOG_FACILITY = ENV['LOG_FACILITY'] || Syslog::LOG_USER
 
-  # Helpful map of syslog facilities
-  LOG_FACILITY_MAP = {
-    "auth"     => Syslog::LOG_AUTH,
-    "authpriv" => Syslog::LOG_AUTHPRIV,
-    "cron"     => Syslog::LOG_CRON,
-    "daemon"   => Syslog::LOG_DAEMON,
-    "ftp"      => Syslog::LOG_FTP,
-    "kern"     => Syslog::LOG_KERN,
-    "mail"     => Syslog::LOG_MAIL,
-    "news"     => Syslog::LOG_NEWS,
-    "syslog"   => Syslog::LOG_SYSLOG,
-    "user"     => Syslog::LOG_USER,
-    "uucp"     => Syslog::LOG_UUCP,
-    "local0"   => Syslog::LOG_LOCAL0,
-    "local1"   => Syslog::LOG_LOCAL1,
-    "local2"   => Syslog::LOG_LOCAL2,
-    "local3"   => Syslog::LOG_LOCAL3,
-    "local4"   => Syslog::LOG_LOCAL4,
-    "local5"   => Syslog::LOG_LOCAL5,
-    "local6"   => Syslog::LOG_LOCAL6,
-    "local7"   => Syslog::LOG_LOCAL7,
-  }
-
   # Default log level
   LOG_LEVEL = (ENV['LOG_LEVEL'] || 6).to_i
-
-  # Helpful map of syslog log levels
-  LOG_LEVEL_MAP = {
-    "emerg"     => 0,
-    "emergency" => 0,
-    "alert"     => 1,
-    "crit"      => 2,
-    "critical"  => 2,
-    "error"     => 3,
-    "warn"      => 4,
-    "warning"   => 4,
-    "notice"    => 5,
-    "info"      => 6,
-    "debug"     => 7
-  }
 
   # Default syslog options
   SYSLOG_OPTIONS = Syslog::LOG_PID|Syslog::LOG_CONS
@@ -81,7 +44,8 @@ module Scrolls
       @timestamp    = options.fetch(:timestamp, false)
       @exceptions   = options.fetch(:exceptions, "single")
       @global_ctx   = options.fetch(:global_context, {})
-      @syslogopts   = options.fetch(:syslog_options, SYSLOG_OPTIONS)
+      @syslog_opts  = options.fetch(:syslog_options, SYSLOG_OPTIONS)
+      @escape_keys  = options.fetch(:escape_keys, false)
 
       # Our main entry point to ensure our options are setup properly
       setup!
@@ -107,8 +71,12 @@ module Scrolls
       setup_stream
     end
 
+    def escape_keys?
+      @escape_keys
+    end
+
     def syslog_options
-      @syslogopts
+      @syslog_opts
     end
 
     def facility
@@ -331,7 +299,7 @@ module Scrolls
 
     def write(data)
       if log_level_ok?(data[:level])
-        msg = Scrolls::Parser.unparse(data)
+        msg = Scrolls::Parser.unparse(data, escape_keys=escape_keys?)
         @logger.log(msg)
       end
     end
