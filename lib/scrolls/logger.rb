@@ -36,10 +36,13 @@ module Scrolls
 
   # Helpful map of syslog log levels
   LOG_LEVEL_MAP = {
+    "emerg"     => 0,
     "emergency" => 0,
     "alert"     => 1,
+    "crit"      => 2,
     "critical"  => 2,
     "error"     => 3,
+    "warn"      => 4,
     "warning"   => 4,
     "notice"    => 5,
     "info"      => 6,
@@ -50,6 +53,7 @@ module Scrolls
   SYSLOG_OPTIONS = Syslog::LOG_PID|Syslog::LOG_CONS
 
   class TimeUnitError < RuntimeError; end
+  class LogLevelError < StandardError; end
 
   # Top level class to hold our global context
   #
@@ -318,6 +322,7 @@ module Scrolls
 
     def log_level_ok?(level)
       if level
+        raise LogLevelError, "Log level unknown" unless LOG_LEVEL_MAP.key?(level)
         LOG_LEVEL_MAP[level.to_s] <= LOG_LEVEL
       else
         true

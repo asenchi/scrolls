@@ -106,6 +106,12 @@ class TestScrolls < Minitest::Test
     end
   end
 
+  def test_unknown_log_level
+    assert_raises Scrolls::LogLevelError do
+      Scrolls.log(:level => "nope")
+    end
+  end
+
   def test_logging
     Scrolls.log(:test => "basic")
     assert_equal "test=basic\n", @out.string
