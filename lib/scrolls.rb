@@ -14,7 +14,7 @@ module Scrolls
   #   exceptions     - Method for outputting exceptions (default: single line)
   #   global_context - Immutable context to prepend all messages with
   #   syslog_options - Syslog options (default: Syslog::LOG_PID|Syslog::LOG_CONS)
-  #   escape_keys - Escape chars in keys
+  #   escape_keys    - Escape chars in keys
   #
   def init(options={})
     # Set a hint whether #init was called.
