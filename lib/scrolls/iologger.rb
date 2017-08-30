@@ -8,7 +8,6 @@ module Scrolls
     end
 
     def log(data)
-      puts @stream
       @stream.write("#{data}\n")
     end
   end

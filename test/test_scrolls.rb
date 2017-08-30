@@ -1,14 +1,11 @@
 require File.expand_path("../test_helper", __FILE__)
 
-class TestScrolls < Test::Unit::TestCase
+class TestScrolls < Minitest::Test
   def setup
     @out = StringIO.new
     Scrolls.init(
       :stream => @out
     )
-  end
-
-  def teardown
   end
 
   def test_default_construct
@@ -103,7 +100,7 @@ class TestScrolls < Test::Unit::TestCase
   end
 
   def test_setting_incorrect_time_unit
-    assert_raise Scrolls::TimeUnitError do
+    assert_raises Scrolls::TimeUnitError do
       Scrolls.time_unit = "years"
       Scrolls.log(:tu => "yrs")
     end

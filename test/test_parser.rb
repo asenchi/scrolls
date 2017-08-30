@@ -1,6 +1,6 @@
 require File.expand_path("../test_helper", __FILE__)
 
-class TestScrollsParser < Test::Unit::TestCase
+class TestScrollsParser < Minitest::Test
   include Scrolls::Parser
 
   def test_parse_bool
