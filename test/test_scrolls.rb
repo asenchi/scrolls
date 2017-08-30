@@ -13,7 +13,7 @@ class TestScrolls < Test::Unit::TestCase
 
   def test_default_construct
     Scrolls.init
-    assert_equal Scrolls::IOLog, Scrolls.stream.class
+    assert_equal Scrolls::IOLogger, Scrolls.stream.class
   end
 
   def test_default_global_context

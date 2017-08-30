@@ -1,5 +1,5 @@
 module Scrolls
-  class IOLog
+  class IOLogger
     def initialize(stream)
       if stream.respond_to?(:sync)
         stream.sync = true
@@ -8,6 +8,7 @@ module Scrolls
     end
 
     def log(data)
+      puts @stream
       @stream.write("#{data}\n")
     end
   end

@@ -1,10 +1,59 @@
+require "syslog"
+
 require "scrolls/parser"
-require "scrolls/iolog"
-require "scrolls/syslog"
+require "scrolls/iologger"
+require "scrolls/sysloglogger"
 
 module Scrolls
+  # Default log facility
+  LOG_FACILITY = ENV['LOG_FACILITY'] || Syslog::LOG_USER
+
+  # Helpful map of syslog facilities
+  LOG_FACILITY_MAP = {
+    "auth"     => Syslog::LOG_AUTH,
+    "authpriv" => Syslog::LOG_AUTHPRIV,
+    "cron"     => Syslog::LOG_CRON,
+    "daemon"   => Syslog::LOG_DAEMON,
+    "ftp"      => Syslog::LOG_FTP,
+    "kern"     => Syslog::LOG_KERN,
+    "mail"     => Syslog::LOG_MAIL,
+    "news"     => Syslog::LOG_NEWS,
+    "syslog"   => Syslog::LOG_SYSLOG,
+    "user"     => Syslog::LOG_USER,
+    "uucp"     => Syslog::LOG_UUCP,
+    "local0"   => Syslog::LOG_LOCAL0,
+    "local1"   => Syslog::LOG_LOCAL1,
+    "local2"   => Syslog::LOG_LOCAL2,
+    "local3"   => Syslog::LOG_LOCAL3,
+    "local4"   => Syslog::LOG_LOCAL4,
+    "local5"   => Syslog::LOG_LOCAL5,
+    "local6"   => Syslog::LOG_LOCAL6,
+    "local7"   => Syslog::LOG_LOCAL7,
+  }
+
+  # Default log level
+  LOG_LEVEL = (ENV['LOG_LEVEL'] || 6).to_i
+
+  # Helpful map of syslog log levels
+  LOG_LEVEL_MAP = {
+    "emergency" => 0,
+    "alert"     => 1,
+    "critical"  => 2,
+    "error"     => 3,
+    "warning"   => 4,
+    "notice"    => 5,
+    "info"      => 6,
+    "debug"     => 7
+  }
+
+  # Default syslog options
+  SYSLOG_OPTIONS = Syslog::LOG_PID|Syslog::LOG_CONS
+
   class TimeUnitError < RuntimeError; end
 
+  # Top level class to hold our global context
+  #
+  # Global context is defined using Scrolls#init
   class GlobalContext
     attr_reader :context
     def initialize(context)
@@ -16,41 +65,7 @@ module Scrolls
     end
   end
 
-  class Log
-    LOG_FACILITY = ENV['LOG_FACILITY'] || Syslog::LOG_USER
-    LOG_FACILITY_MAP = {
-      "auth"     => Syslog::LOG_AUTH,
-      "authpriv" => Syslog::LOG_AUTHPRIV,
-      "cron"     => Syslog::LOG_CRON,
-      "daemon"   => Syslog::LOG_DAEMON,
-      "ftp"      => Syslog::LOG_FTP,
-      "kern"     => Syslog::LOG_KERN,
-      "mail"     => Syslog::LOG_MAIL,
-      "news"     => Syslog::LOG_NEWS,
-      "syslog"   => Syslog::LOG_SYSLOG,
-      "user"     => Syslog::LOG_USER,
-      "uucp"     => Syslog::LOG_UUCP,
-      "local0"   => Syslog::LOG_LOCAL0,
-      "local1"   => Syslog::LOG_LOCAL1,
-      "local2"   => Syslog::LOG_LOCAL2,
-      "local3"   => Syslog::LOG_LOCAL3,
-      "local4"   => Syslog::LOG_LOCAL4,
-      "local5"   => Syslog::LOG_LOCAL5,
-      "local6"   => Syslog::LOG_LOCAL6,
-      "local7"   => Syslog::LOG_LOCAL7,
-    }
-
-    LOG_LEVEL = (ENV['LOG_LEVEL'] || 6).to_i
-    LOG_LEVEL_MAP = {
-      "emergency" => 0,
-      "alert"     => 1,
-      "critical"  => 2,
-      "error"     => 3,
-      "warning"   => 4,
-      "notice"    => 5,
-      "info"      => 6,
-      "debug"     => 7
-    }
+  class Logger
 
     attr_reader :logger
     attr_accessor :exceptions, :timestamp
@@ -265,8 +280,11 @@ module Scrolls
       end
     end
     
-    def sync_stream(out = STDOUT)
-      IOLog.new(out)
+    def sync_stream(out = nil)
+      unless out
+        out = STDOUT
+      end
+      IOLogger.new(out)
     end
 
     def progname

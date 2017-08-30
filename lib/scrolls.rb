@@ -1,4 +1,3 @@
-require "thread"
 require "scrolls/logger"
 require "scrolls/version"
 
@@ -10,7 +9,7 @@ module Scrolls
   # options - A hash of key/values for configuring Scrolls
   #
   def init(options={})
-    @log = Log.new(options)
+    @log = Logger.new(options)
   end
 
   # Public: Set a context in a block for logs
