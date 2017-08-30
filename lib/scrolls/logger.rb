@@ -71,13 +71,15 @@ module Scrolls
     attr_accessor :exceptions, :timestamp
 
     def initialize(options={})
-      @stream     = options.fetch(:stream, sync_stream)
-      @facility   = options.fetch(:facility, LOG_FACILITY)
-      @time_unit  = options.fetch(:time_unit, "seconds")
-      @timestamp  = options.fetch(:timestamp, false)
-      @exceptions = options.fetch(:exceptions, "single")
-      @global_ctx = options.fetch(:global_context, {})
+      @stream       = options.fetch(:stream, STDOUT)
+      @log_facility = options.fetch(:facility, LOG_FACILITY)
+      @time_unit    = options.fetch(:time_unit, "seconds")
+      @timestamp    = options.fetch(:timestamp, false)
+      @exceptions   = options.fetch(:exceptions, "single")
+      @global_ctx   = options.fetch(:global_context, {})
+      @syslogopts   = options.fetch(:syslog_options, SYSLOG_OPTIONS)
 
+      # Our main entry point to ensure our options are setup properly
       setup!
     end
 
@@ -93,23 +95,33 @@ module Scrolls
       @stream
     end
 
-    def stream=(stream)
+    def stream=(s)
       # Return early to avoid setup
-      return if stream == @stream
+      return if s == @stream
       
-      @stream = stream
+      @stream = s
       setup_stream
     end
 
+    def syslog_options
+      @syslogopts
+    end
+
     def facility
-      @facility ||= LOG_FACILITY
+      @facility
     end
 
     def facility=(f)
       if f
-        @facility = LOG_FACILITY_MAP[f]
-        # Assume we are using syslog and set it up again
-        @logger = Scrolls::SyslogLogger.new(progname, facility)
+        setup_facility(f)
+        # If we are using syslog, we need to setup our connection again
+        if stream == "syslog"
+          @logger = Scrolls::SyslogLogger.new(
+                      progname,
+                      syslog_options,
+                      facility
+                    )
+        end
       end
     end
 
@@ -119,7 +131,7 @@ module Scrolls
 
     def time_unit=(u)
       @time_unit = u
-      translate_time_unit
+      setup_time_unit
     end
 
     def global_context
@@ -228,14 +240,15 @@ module Scrolls
     private
 
     def setup!
-      build_global_context
+      setup_global_context
       prepend_timestamp?
+      setup_facility
       setup_stream
       single_line_exceptions?
-      translate_time_unit
+      setup_time_unit
     end
 
-    def build_global_context
+    def setup_global_context
       # Builds up an immutable object for our global_context
       # This is not backwards compatiable and was introduced after 0.3.7.
       # Removes ability to add to global context once we initialize our
@@ -248,15 +261,28 @@ module Scrolls
       @timestamp
     end
 
+    def setup_facility(f=nil)
+      if f
+        @facility = LOG_FACILITY_MAP.fetch(f, LOG_FACILITY)
+      else
+        @facility = LOG_FACILITY_MAP.fetch(@log_facility, LOG_FACILITY)
+      end
+    end
+
     def setup_stream
       unless @stream == STDOUT
+        # Set this so we know we aren't using our default stream
         @defined = true
       end
 
       if @stream == "syslog"
-        @logger = Scrolls::SyslogLogger.new(progname, facility)
+        @logger = Scrolls::SyslogLogger.new(
+                    progname,
+                    syslog_options,
+                    facility
+                  )
       else
-        @logger = sync_stream(@stream)
+        @logger = IOLogger.new(@stream)
       end
     end
 
@@ -265,7 +291,7 @@ module Scrolls
       true
     end
 
-    def translate_time_unit
+    def setup_time_unit
       unless %w{s ms seconds milliseconds}.include? @time_unit
         raise TimeUnitError, "Specify the following: s, ms, seconds, milliseconds"
       end
@@ -279,14 +305,8 @@ module Scrolls
         @t = 1.0
       end
     end
-    
-    def sync_stream(out = nil)
-      unless out
-        out = STDOUT
-      end
-      IOLogger.new(out)
-    end
 
+    # We need this for our syslog setup
     def progname
       File.basename($0)
     end
@@ -307,7 +327,7 @@ module Scrolls
     def write(data)
       if log_level_ok?(data[:level])
         msg = Scrolls::Parser.unparse(data)
-        logger.log(msg)
+        @logger.log(msg)
       end
     end
 

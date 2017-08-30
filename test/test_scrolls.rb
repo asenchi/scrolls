@@ -10,7 +10,7 @@ class TestScrolls < Minitest::Test
 
   def test_default_construct
     Scrolls.init
-    assert_equal Scrolls::IOLogger, Scrolls.stream.class
+    assert_equal Scrolls::IOLogger, Scrolls.logger.class
   end
 
   def test_default_global_context

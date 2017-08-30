@@ -9,7 +9,15 @@ module Scrolls
   # options - A hash of key/values for configuring Scrolls
   #
   def init(options={})
+    # Set a hint whether #init was called.
+    @initialized = true
     @log = Logger.new(options)
+  end
+
+  # Public: Get the primary logger
+  #
+  def logger
+    @log.logger
   end
 
   # Public: Set a context in a block for logs
@@ -47,6 +55,9 @@ module Scrolls
   #   => nil
   #
   def log(data, &blk)
+    # Allows us to call #log directly and initialize defaults
+    @log = Logger.new({}) unless @initialized
+
     @log.log(data, &blk)
   end
 
