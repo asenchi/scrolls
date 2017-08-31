@@ -127,7 +127,7 @@ class TestScrolls < Minitest::Test
     begin
       raise Exception
     rescue Exception => e
-      Scrolls.log_exception({:test => "exception"}, e)
+      Scrolls.log_exception(e, {:test => "exception"})
     end
 
     oneline_bt = @out.string.gsub("\n", 'XX')
@@ -139,7 +139,7 @@ class TestScrolls < Minitest::Test
     begin
       raise Exception
     rescue Exception => e
-      Scrolls.log_exception({:o => "o"}, e)
+      Scrolls.log_exception(e, {:o => "o"})
     end
 
     oneline_bt = @out.string.gsub("\n", 'XX')
