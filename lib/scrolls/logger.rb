@@ -155,16 +155,17 @@ module Scrolls
       end
     end
 
-    def log_exception(data, e)
+    def log_exception(e, data=nil)
       unless @defined
         @stream = STDERR
         setup_stream
       end
 
-      # If we get a string lets bring it into our structure.
-      if data.kind_of? String
+      # We check our arguments for type
+      case data
+      when String
         rawhash = { "log_message" => data }
-      else
+      when Hash
         rawhash = data
       end
 
