@@ -51,11 +51,15 @@ module Scrolls
     end
 
     def context
-      Thread.current.thread_variable_get(:scrolls_context)
+      if Thread.current.thread_variables.include?(:scrolls_context)
+        Thread.current.thread_variable_get(:scrolls_context)
+      else
+        Thread.current.thread_variable_set(:scrolls_context, {})
+      end
     end
 
     def context=(h)
-      Thread.current.thread_variable_set(:scrolls_context], h || {})
+      Thread.current.thread_variable_set(:scrolls_context, h || {})
     end
 
     def stream
