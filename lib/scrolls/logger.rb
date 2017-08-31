@@ -22,13 +22,12 @@ module Scrolls
   #
   # Global context is defined using Scrolls#init
   class GlobalContext
-    attr_reader :context
-    def initialize(context)
-      @context = context || {}
+    def initialize(ctx)
+      @ctx = ctx || {}
     end
 
     def to_h
-      @context
+      @ctx
     end
   end
 
