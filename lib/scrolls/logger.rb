@@ -167,6 +167,8 @@ module Scrolls
         rawhash = { "log_message" => data }
       when Hash
         rawhash = data
+      else
+        rawhash = {}
       end
 
       if gc = @global_context.to_h
