@@ -25,17 +25,17 @@ module Scrolls
 
   # Helpful map of syslog log levels
   LOG_LEVEL_MAP = {
-    "emerg"     => 0,
-    "emergency" => 0,
-    "alert"     => 1,
-    "crit"      => 2,
-    "critical"  => 2,
-    "error"     => 3,
-    "warn"      => 4,
-    "warning"   => 4,
-    "notice"    => 5,
-    "info"      => 6,
-    "debug"     => 7
+    "emerg"     => 0, # Syslog::LOG_EMERG
+    "emergency" => 0, # Syslog::LOG_EMERG
+    "alert"     => 1, # Syslog::LOG_ALERT
+    "crit"      => 2, # Syslog::LOG_CRIT
+    "critical"  => 2, # Syslog::LOG_CRIT
+    "error"     => 3, # Syslog::LOG_ERR
+    "warn"      => 4, # Syslog::LOG_WARNING
+    "warning"   => 4, # Syslog::LOG_WARNING
+    "notice"    => 5, # Syslog::LOG_NOTICE
+    "info"      => 6, # Syslog::LOG_INFO
+    "debug"     => 7  # Syslog::LOG_DEBUG
   }
 
   ESCAPE_CHAR = {
