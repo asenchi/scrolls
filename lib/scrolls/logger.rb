@@ -140,14 +140,16 @@ module Scrolls
         begin
           res = yield
         rescue StandardError => e
-          log(logdata.merge(
-            :at           => "exception",
-            :reraise      => true,
-            :class        => e.class,
-            :message      => e.message,
-            :exception_id => e.object_id.abs,
-            :elapsed      => calculate_time(start, Time.now)
-          ))
+          logdata.merge({
+            at:           "exception",
+            reraise:      true,
+            class:        e.class,
+            message:      e.message,
+            exception_id: e.object_id.abs,
+            elapsed:      calculate_time(start, Time.now)
+          })
+          logdata.delete_if { |k,v| k if v == "" }
+          log(logdata)
           raise e
         end
         log(logdata.merge(:at => "finish", :elapsed => calculate_time(start, Time.now)))
@@ -176,11 +178,13 @@ module Scrolls
       end
 
       excepdata = {
-        :at           => "exception",
-        :class        => e.class,
-        :message      => e.message,
-        :exception_id => e.object_id.abs
+        at:           "exception",
+        class:        e.class,
+        message:      e.message,
+        exception_id: e.object_id.abs
       }
+
+      excepdata.delete_if { |k,v| k if v == "" }
 
       if e.backtrace
         if single_line_exceptions?
