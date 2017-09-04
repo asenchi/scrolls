@@ -46,6 +46,31 @@ rescue Exception => e
 end
 ```
 
+You can also use `Scrolls#log` and `Scrolls#log_exception` without initalizing:
+
+```ruby
+require 'scrolls'
+
+Scrolls.log(test: "test")
+```
+
+### Defaults
+
+Here are the defaults `Scrolls#init`:
+
+```
+stream: STDOUT
+facility: Syslog::LOG_USER
+time_unit: "seconds"
+timestamp: false
+exceptions: "single"
+global_context: {}
+syslog_options: Syslog::LOG_PID|Syslog::LOG_CONS
+escape_keys: false
+```
+
+## Older Versions
+
 ### Pre 0.9.0
 
 ```ruby
