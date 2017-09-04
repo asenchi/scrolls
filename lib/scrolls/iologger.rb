@@ -1,7 +1,9 @@
 module Scrolls
-  class IOLog
+  class IOLogger
     def initialize(stream)
-      stream.sync = true
+      if stream.respond_to?(:sync)
+        stream.sync = true
+      end
       @stream = stream
     end
 

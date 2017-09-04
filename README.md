@@ -20,26 +20,64 @@ Or install it yourself as:
 
 Scrolls follows the belief that logs should be treated as data. One way to think of them is the blood of your infrastructure. Logs are a realtime view of what is happening on your systems.
 
-## Need to know!
-
-The way Scrolls handles "global_context" is changing after v0.3.8. Please see the [release notes](https://github.com/asenchi/scrolls/releases/tag/v0.3.8) and [this documentation](https://github.com/asenchi/scrolls/tree/master/docs/global-context.md) for more information. I apologize for any trouble this may cause.
-
-## Documentation:
-
-I apologize, some of these are a WIP.
-
-* [Sending logs to syslog using Scrolls](https://github.com/asenchi/scrolls/tree/master/docs/syslog.md)
-* Logging contexts
-* Adding timestamps by default
-* Misc Features
-
 ## Usage
+
+### 0.9.0 and later
+
+```ruby
+require 'scrolls'
+
+Scrolls.init(
+  timestamp: true,
+  global_context: {app: "scrolls", deploy: "production"},
+  exceptions: "multi"
+)
+
+Scrolls.log(at: "test")
+
+Scrolls.context(context: "block") do
+  Scrolls.log(at: "exec")
+end
+
+begin
+  raise
+rescue Exception => e
+  Scrolls.log_exception(e, at: "raise")
+end
+```
+
+You can also use `Scrolls#log` and `Scrolls#log_exception` without initalizing:
+
+```ruby
+require 'scrolls'
+
+Scrolls.log(test: "test")
+```
+
+### Defaults
+
+Here are the defaults `Scrolls#init`:
+
+```
+stream: STDOUT
+facility: Syslog::LOG_USER
+time_unit: "seconds"
+timestamp: false
+exceptions: "single"
+global_context: {}
+syslog_options: Syslog::LOG_PID|Syslog::LOG_CONS
+escape_keys: false
+```
+
+## Older Versions
+
+### Pre 0.9.0
 
 ```ruby
 require 'scrolls'
 
 Scrolls.add_timestamp = true
-Scrolls.global_context(:app => "scrolls", :deploy => ENV["DEPLOY"])
+Scrolls.global_context(:app => "scrolls", :deploy => "production")
 
 Scrolls.log(:at => "test")
 
@@ -57,10 +95,10 @@ end
 Produces:
 
 ```
-now="2014-01-17T16:11:39Z" app=scrolls deploy=nil at=test
-now="2014-01-17T16:11:39Z" app=scrolls deploy=nil context=block at=exec
-now="2014-01-17T16:11:39Z" app=scrolls deploy=nil at=exception class=RuntimeError message= exception_id=70312608019740
-now="2014-01-17T16:11:39Z" app=scrolls deploy=nil at=exception class= exception_id=70312608019740 site="./test.rb:16:in <main>"
+now="2017-09-01T00:37:13Z" app=scrolls deploy=production at=test
+now="2017-09-01T00:37:13Z" app=scrolls deploy=production context=block at=exec
+now="2017-09-01T00:37:13Z" app=scrolls deploy=production at=exception class=RuntimeError exception_id=70149797587080
+now="2017-09-01T00:37:13Z" app=scrolls deploy=production at=exception class=RuntimeError exception_id=70149797587080 site="./test-scrolls.rb:16:in <main>"
 ```
 
 ## History

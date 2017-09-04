@@ -1,11 +1,13 @@
 #!/usr/bin/env rake
+
 require "bundler/gem_tasks"
+require "rake/testtask"
 
 ENV['TESTOPTS'] = "-v"
 
-require "rake/testtask"
 Rake::TestTask.new do |t|
-  t.pattern = "test/test_*.rb"
+  t.test_files = FileList["test/**/test_*.rb"]
+  t.verbose = true
 end
 
 task :default => :test

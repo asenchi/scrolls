@@ -38,7 +38,7 @@ Scrolls.init(
 Scrolls.log(:t => "t")
 ```
 
-Is the same as this currently:
+Is the same as this in versions prior to 0.9.0:
 
 ```ruby
 Scrolls.global_context(:g => "g")

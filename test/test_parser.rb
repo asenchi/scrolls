@@ -1,6 +1,6 @@
-require_relative "test_helper"
+require File.expand_path("../test_helper", __FILE__)
 
-class TestScrollsParser < Test::Unit::TestCase
+class TestScrollsParser < Minitest::Test
   include Scrolls::Parser
 
   def test_parse_bool
@@ -77,6 +77,15 @@ class TestScrollsParser < Test::Unit::TestCase
     time = Time.new(2012, 06, 19, 16, 02, 35, "+01:00")
     data = { t: time }
     assert_equal 't="2012-06-19T16:02:35+01:00"', unparse(data)
+  end
+
+  def test_unparse_escape_keys
+    html  = "<p>p</p>"
+    slash = "p/p"
+
+    data = { html => "d", slash => "d" }
+    assert_equal '&lt;p&gt;p&lt;&#x2F;p&gt;=d p&#x2F;p=d',
+      unparse(data, escape_keys=true)
   end
 
   def test_parse_time
