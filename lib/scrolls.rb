@@ -85,6 +85,9 @@ module Scrolls
   #   ...
   #
   def log_exception(data, e)
+    # Allows us to call #log directly and initialize defaults
+    @log = Logger.new({}) unless @initialized
+
     @log.log_exception(data, e)
   end
 
