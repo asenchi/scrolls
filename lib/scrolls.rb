@@ -71,15 +71,15 @@ module Scrolls
 
   # Public: Log an exception
   #
-  # data - A hash of key/values to log
   # e    - An exception to pass to the logger
+  # data - A hash of key/values to log
   #
   # Examples:
   #
   #   begin
   #     raise Exception
   #   rescue Exception => e
-  #     Scrolls.log_exception({test: "test"}, e)
+  #     Scrolls.log_exception(e, {test: "test"})
   #   end
   #   test=test at=exception class=Exception message=Exception exception_id=70321999017240
   #   ...
