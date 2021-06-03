@@ -140,7 +140,7 @@ module Scrolls
         begin
           res = yield
         rescue StandardError => e
-          logdata.merge({
+          logdata.merge!({
             at:           "exception",
             reraise:      true,
             class:        e.class,

@@ -90,6 +90,21 @@ class TestScrolls < Minitest::Test
     end
   end
 
+  def test_deeply_nested_context_after_exception
+    Scrolls.log(:o => "o") do
+      begin
+        Scrolls.log(:io => 'io') do
+          raise "Error from inside of nested logging"
+        end
+      rescue
+        Scrolls.log(:o => 'o')
+      end
+    end
+    @out.truncate(124)
+    output = "o=o at=start\nio=io at=start\nio=io at=exception reraise=true class=RuntimeError message=\"Error from inside of nested logging\""
+    assert_equal output, @out.string
+  end
+
   def test_default_time_unit
     assert_equal "seconds", Scrolls.time_unit
   end
