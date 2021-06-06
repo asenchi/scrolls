@@ -69,7 +69,7 @@ module Scrolls
     def stream=(s)
       # Return early to avoid setup
       return if s == @stream
-      
+
       @stream = s
       setup_stream
     end

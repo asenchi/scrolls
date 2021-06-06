@@ -84,11 +84,11 @@ module Scrolls
   #   test=test at=exception class=Exception message=Exception exception_id=70321999017240
   #   ...
   #
-  def log_exception(data, e)
+  def log_exception(e, data)
     # Allows us to call #log directly and initialize defaults
     @log = Logger.new({}) unless @initialized
 
-    @log.log_exception(data, e)
+    @log.log_exception(e, data)
   end
 
   # Public: Setup a logging facility (default: Syslog::LOG_USER)
