@@ -67,6 +67,7 @@ exceptions: "single"
 global_context: {}
 syslog_options: Syslog::LOG_PID|Syslog::LOG_CONS
 escape_keys: false
+strict_logfmt: false
 ```
 
 ## Older Versions
