@@ -15,6 +15,7 @@ module Scrolls
   #   global_context - Immutable context to prepend all messages with
   #   syslog_options - Syslog options (default: Syslog::LOG_PID|Syslog::LOG_CONS)
   #   escape_keys    - Escape chars in keys
+  #   strict_logfmt  - Always use double quotes to quote values
   #
   def init(options={})
     # Set a hint whether #init was called.

@@ -88,6 +88,12 @@ class TestScrollsParser < Minitest::Test
       unparse(data, escape_keys=true)
   end
 
+  def test_unparse_strict_logfmt
+    data = { s: 'echo "hello"' }
+    assert_equal 's="echo \"hello\""', unparse(data, escape_keys=false, strict_logfmt=true)
+    assert_equal data.inspect, parse(unparse(data, escape_keys=false, strict_logfmt=true)).inspect
+  end
+
   def test_parse_time
     time = Time.new(2012, 06, 19, 16, 02, 35, "+01:00")
     string = "t=2012-06-19T16:02:35+01:00"

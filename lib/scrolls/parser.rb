@@ -4,7 +4,7 @@ module Scrolls
   module Parser
     extend self
 
-    def unparse(data, escape_keys=false)
+    def unparse(data, escape_keys=false, strict_logfmt=false)
       data.map do |(k,v)|
         k = Scrolls::Utils.escape_chars(k) if escape_keys
 
@@ -23,7 +23,7 @@ module Scrolls
           has_single_quote = v.index("'")
           has_double_quote = v.index('"')
           if v =~ /[ =:,]/
-            if has_single_quote && has_double_quote
+            if (has_single_quote || strict_logfmt) && has_double_quote
               v = '"' + v.gsub(/\\|"/) { |c| "\\#{c}" } + '"'
             elsif has_double_quote
               v = "'" + v.gsub('\\', '\\\\\\') + "'"

@@ -37,14 +37,15 @@ module Scrolls
     attr_accessor :exceptions, :timestamp
 
     def initialize(options={})
-      @stream       = options.fetch(:stream, STDOUT)
-      @log_facility = options.fetch(:facility, LOG_FACILITY)
-      @time_unit    = options.fetch(:time_unit, "seconds")
-      @timestamp    = options.fetch(:timestamp, false)
-      @exceptions   = options.fetch(:exceptions, "single")
-      @global_ctx   = options.fetch(:global_context, {})
-      @syslog_opts  = options.fetch(:syslog_options, SYSLOG_OPTIONS)
-      @escape_keys  = options.fetch(:escape_keys, false)
+      @stream        = options.fetch(:stream, STDOUT)
+      @log_facility  = options.fetch(:facility, LOG_FACILITY)
+      @time_unit     = options.fetch(:time_unit, "seconds")
+      @timestamp     = options.fetch(:timestamp, false)
+      @exceptions    = options.fetch(:exceptions, "single")
+      @global_ctx    = options.fetch(:global_context, {})
+      @syslog_opts   = options.fetch(:syslog_options, SYSLOG_OPTIONS)
+      @escape_keys   = options.fetch(:escape_keys, false)
+      @strict_logfmt = options.fetch(:strict_logfmt, false)
 
       # Our main entry point to ensure our options are setup properly
       setup!
@@ -76,6 +77,10 @@ module Scrolls
 
     def escape_keys?
       @escape_keys
+    end
+
+    def strict_logfmt?
+      @strict_logfmt
     end
 
     def syslog_options
@@ -309,7 +314,7 @@ module Scrolls
 
     def write(data)
       if log_level_ok?(data[:level])
-        msg = Scrolls::Parser.unparse(data, escape_keys=escape_keys?)
+        msg = Scrolls::Parser.unparse(data, escape_keys=escape_keys?, strict_logfmt=strict_logfmt?)
         @logger.log(msg)
       end
     end
