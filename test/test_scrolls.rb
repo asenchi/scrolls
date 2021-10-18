@@ -223,22 +223,22 @@ class TestScrolls < Minitest::Test
 
   def test_sending_string_error
     Scrolls.error("error")
-    assert_equal "log_message=error\n", @out.string
+    assert_equal "log_message=error level=warning\n", @out.string
   end
 
   def test_sending_string_fatal
     Scrolls.fatal("fatal")
-    assert_equal "log_message=fatal\n", @out.string
+    assert_equal "log_message=fatal level=error\n", @out.string
   end
 
   def test_sending_string_warn
     Scrolls.warn("warn")
-    assert_equal "log_message=warn\n", @out.string
+    assert_equal "log_message=warn level=notice\n", @out.string
   end
 
   def test_sending_string_unknown
     Scrolls.unknown("unknown")
-    assert_equal "log_message=unknown\n", @out.string
+    assert_equal "log_message=unknown level=alert\n", @out.string
   end
 
 end
