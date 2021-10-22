@@ -222,6 +222,7 @@ module Scrolls
   #   => nil
   #
   def debug(data, &blk)
+    data = coalesce_strings_to_hash(data)
     data = data.merge(:level => "debug") if data.is_a?(Hash)
     @log.log(data, &blk)
   end
@@ -240,6 +241,7 @@ module Scrolls
   #   => nil
   #
   def error(data, &blk)
+    data = coalesce_strings_to_hash(data)
     data = data.merge(:level => "warning") if data.is_a?(Hash)
     @log.log(data, &blk)
   end
@@ -258,6 +260,7 @@ module Scrolls
   #   => nil
   #
   def fatal(data, &blk)
+    data = coalesce_strings_to_hash(data)
     data = data.merge(:level => "error") if data.is_a?(Hash)
     @log.log(data, &blk)
   end
@@ -276,6 +279,7 @@ module Scrolls
   #   => nil
   #
   def info(data, &blk)
+    data = coalesce_strings_to_hash(data)
     data = data.merge(:level => "info") if data.is_a?(Hash)
     @log.log(data, &blk)
   end
@@ -294,6 +298,7 @@ module Scrolls
   #   => nil
   #
   def warn(data, &blk)
+    data = coalesce_strings_to_hash(data)
     data = data.merge(:level => "notice") if data.is_a?(Hash)
     @log.log(data, &blk)
   end
@@ -312,6 +317,7 @@ module Scrolls
   #   => nil
   #
   def unknown(data, &blk)
+    data = coalesce_strings_to_hash(data)
     data = data.merge(:level => "alert") if data.is_a?(Hash)
     @log.log(data, &blk)
   end
@@ -322,4 +328,8 @@ module Scrolls
     @log
   end
 
+  def coalesce_strings_to_hash(string_or_something_else)
+    return string_or_something_else unless string_or_something_else.is_a?(String)
+    { "log_message" => string_or_something_else }
+  end
 end
