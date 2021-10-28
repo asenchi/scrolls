@@ -21,7 +21,6 @@ module Scrolls
   def init(options={})
     # Set a hint whether #init was called.
     @initialized = true
-
     @adapt_severity_for_syslog = options.fetch(:adapt_severity_for_syslog, true)
     @log = Logger.new(options)
   end
