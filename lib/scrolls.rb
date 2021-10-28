@@ -7,19 +7,22 @@ module Scrolls
   # Public: Initialize a Scrolls logger
   #
   # options - A hash of key/values for configuring Scrolls
-  #   stream         - Stream to output data (default: STDOUT)
-  #   log_facility   - Syslog facility (default: Syslog::LOG_USER)
-  #   time_unit      - Unit of time (default: seconds)
-  #   timestamp      - Prepend logs with a timestamp (default: false)
-  #   exceptions     - Method for outputting exceptions (default: single line)
-  #   global_context - Immutable context to prepend all messages with
-  #   syslog_options - Syslog options (default: Syslog::LOG_PID|Syslog::LOG_CONS)
-  #   escape_keys    - Escape chars in keys
-  #   strict_logfmt  - Always use double quotes to quote values
+  #   stream                    - Stream to output data (default: STDOUT)
+  #   log_facility              - Syslog facility (default: Syslog::LOG_USER)
+  #   time_unit                 - Unit of time (default: seconds)
+  #   timestamp                 - Prepend logs with a timestamp (default: false)
+  #   exceptions                - Method for outputting exceptions (default: single line)
+  #   global_context            - Immutable context to prepend all messages with
+  #   syslog_options            - Syslog options (default: Syslog::LOG_PID|Syslog::LOG_CONS)
+  #   escape_keys               - Escape chars in keys
+  #   strict_logfmt             - Always use double quotes to quote values
+  #   adapt_severity_for_syslog - Downgrade severity one level to match syslog (default: true) per https://docs.ruby-lang.org/en/2.1.0/Syslog/Logger.html
   #
   def init(options={})
     # Set a hint whether #init was called.
     @initialized = true
+
+    @adapt_severity_for_syslog = options.fetch(:adapt_severity_for_syslog, true)
     @log = Logger.new(options)
   end
 
@@ -222,6 +225,7 @@ module Scrolls
   #   => nil
   #
   def debug(data, &blk)
+    data = coalesce_strings_to_hash(data)
     data = data.merge(:level => "debug") if data.is_a?(Hash)
     @log.log(data, &blk)
   end
@@ -240,7 +244,8 @@ module Scrolls
   #   => nil
   #
   def error(data, &blk)
-    data = data.merge(:level => "warning") if data.is_a?(Hash)
+    data = coalesce_strings_to_hash(data)
+    data = data.merge(:level => @adapt_severity_for_syslog ? "warning" : "error") if data.is_a?(Hash)
     @log.log(data, &blk)
   end
 
@@ -258,7 +263,8 @@ module Scrolls
   #   => nil
   #
   def fatal(data, &blk)
-    data = data.merge(:level => "error") if data.is_a?(Hash)
+    data = coalesce_strings_to_hash(data)
+    data = data.merge(:level => @adapt_severity_for_syslog ? "error" : "critical") if data.is_a?(Hash)
     @log.log(data, &blk)
   end
 
@@ -276,6 +282,7 @@ module Scrolls
   #   => nil
   #
   def info(data, &blk)
+    data = coalesce_strings_to_hash(data)
     data = data.merge(:level => "info") if data.is_a?(Hash)
     @log.log(data, &blk)
   end
@@ -294,7 +301,8 @@ module Scrolls
   #   => nil
   #
   def warn(data, &blk)
-    data = data.merge(:level => "notice") if data.is_a?(Hash)
+    data = coalesce_strings_to_hash(data)
+    data = data.merge(:level => @adapt_severity_for_syslog ? "notice" : "warn") if data.is_a?(Hash)
     @log.log(data, &blk)
   end
 
@@ -312,6 +320,7 @@ module Scrolls
   #   => nil
   #
   def unknown(data, &blk)
+    data = coalesce_strings_to_hash(data)
     data = data.merge(:level => "alert") if data.is_a?(Hash)
     @log.log(data, &blk)
   end
@@ -322,4 +331,8 @@ module Scrolls
     @log
   end
 
+  def coalesce_strings_to_hash(string_or_something_else)
+    return string_or_something_else unless string_or_something_else.is_a?(String)
+    { "log_message" => string_or_something_else }
+  end
 end

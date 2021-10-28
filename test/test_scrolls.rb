@@ -223,22 +223,40 @@ class TestScrolls < Minitest::Test
 
   def test_sending_string_error
     Scrolls.error("error")
-    assert_equal "log_message=error\n", @out.string
+    assert_equal "log_message=error level=warning\n", @out.string
   end
 
   def test_sending_string_fatal
     Scrolls.fatal("fatal")
-    assert_equal "log_message=fatal\n", @out.string
+    assert_equal "log_message=fatal level=error\n", @out.string
   end
 
   def test_sending_string_warn
     Scrolls.warn("warn")
-    assert_equal "log_message=warn\n", @out.string
+    assert_equal "log_message=warn level=notice\n", @out.string
+  end
+
+  def test_adapted_log_error
+    Scrolls.init({:stream => @out, :adapt_severity_for_syslog => false })
+    Scrolls.error("error")
+    assert_equal "log_message=error level=error\n", @out.string
+  end
+
+  def test_adapted_log_fatal
+    Scrolls.init({:stream => @out, :adapt_severity_for_syslog => false })
+    Scrolls.fatal("fatal")
+    assert_equal "log_message=fatal level=critical\n", @out.string
+  end
+
+  def test_adapted_log_warn
+    Scrolls.init({:stream => @out, :adapt_severity_for_syslog => false })
+    Scrolls.warn("warn")
+    assert_equal "log_message=warn level=warn\n", @out.string
   end
 
   def test_sending_string_unknown
     Scrolls.unknown("unknown")
-    assert_equal "log_message=unknown\n", @out.string
+    assert_equal "log_message=unknown level=alert\n", @out.string
   end
 
 end
