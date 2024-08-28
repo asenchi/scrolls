@@ -53,9 +53,9 @@ module Scrolls
 
     def self.escape_chars(d)
       if d.is_a?(String) and d =~ ESCAPE_CHAR_PATTERN
-        esc = d.to_s.gsub(ESCAPE_CHAR_PATTERN) {|c| ESCAPE_CHAR[c] }
+        d.to_s.gsub(ESCAPE_CHAR_PATTERN) {|c| ESCAPE_CHAR[c] }
       else
-        esc = d
+        d
       end
     end
 
