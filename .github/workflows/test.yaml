@@ -1,4 +1,4 @@
-name: Test
+name: Test Ruby Versions
 
 on:
   push:
